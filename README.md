@@ -16,14 +16,7 @@ Additionally, you must have KeyCloak installed and configured using Docker Compo
 docker-compose up -d
 ```
 
-4. Access the KeyCloak server by opening a web browser and navigating to `http://localhost:8080/admin`
-5. Create a new realm and configure it to your needs.
-
-### KeyCloak Configuration
-1. Add the client that you will use to connect to the KeyCloak server.
-2. Configure the client with the appropriate settings, such as valid redirect URIs and granted permissions.
-3. Obtain the `client_id` and `client_secret` for the client that you just created.
-4. Use this `client_id` and `client_secret` in your application to connect to the KeyCloak server.
+4. Configure the Kewcloak following the steps of the [KeyCloak configuration steps](docs/keycloak-configuration.md)
 
 Once you have completed these steps, you should be able to run the code in this repository. 
 
