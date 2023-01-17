@@ -7,4 +7,7 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     ports:
       - "${KEYCLOAK_PORT}:8080"
+    volumes:
+      - ${KEYCLOAK_DATA_FOLDER}:/opt/keycloak/data/
+    restart: always
     command: start-dev

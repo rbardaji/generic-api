@@ -16,7 +16,7 @@ Additionally, you must have KeyCloak installed and configured using Docker Compo
 docker-compose up -d
 ```
 
-4. Configure the Kewcloak following the steps of the [KeyCloak configuration steps](docs/keycloak-configuration.md)
+4. Configure Keycloak by following the steps outlined in the [Keycloak Configuration Steps](docs/keycloak-configuration.md)
 
 Once you have completed these steps, you should be able to run the code in this repository. 
 

@@ -17,7 +17,7 @@ In Keycloak, a realm is comparable to a tenant. It allows for the creation of se
 
 3. Fill in the form with the following details:
     
-    **Realm name**: generic-api
+    **Realm name**: myrealm
 
 4. Press `Create`.
 
@@ -69,7 +69,7 @@ Let’s try to secure our Generic API. First step is to register the Generic API
 
     **Client type**: OpenID Connect
 
-    **Client ID**: generic-api-client
+    **Client ID**: myclient
 
 <div align="center"><img src="./img/add-client-1.png" alt="Add client 1"></div>
 
