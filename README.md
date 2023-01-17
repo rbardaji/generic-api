@@ -5,7 +5,7 @@ This GitHub repo contains code for a generic API in Python using the FastAPI fra
 Before running the code in this repository, you must have KeyCloak installed and configured using Docker Compose.
 
 ### KeyCloak Installation using Docker Compose
-1. Make sure you have Docker and Docker Compose installed on your system. If not, you can download Docker from the official website (https://www.docker.com/get-started) and follow the instructions for your operating system to install it. You can install Docker Compose by following the instructions on this link (https://docs.docker.com/compose/install/)
+1. Make sure you have Docker and Docker Compose installed on your system. If not, you can download Docker from the official website (https://www.docker.com/get-started) and follow the instructions for your operating system to install it. If you install the Docker Desktop, Docker Compose may be installed automatically. You can also install Docker Compose by following the instructions on this link (https://docs.docker.com/compose/install/)
 2. Create a new file named `docker-compose.yml` in the root of your project and paste the following content:
 
 ```
