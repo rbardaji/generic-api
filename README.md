@@ -6,21 +6,7 @@ Before running the code in this repository, you must have KeyCloak installed and
 
 ### KeyCloak Installation using Docker Compose
 1. Make sure you have Docker and Docker Compose installed on your system. If not, you can download Docker from the official website (https://www.docker.com/get-started) and follow the instructions for your operating system to install it. If you install the Docker Desktop, Docker Compose may be installed automatically. You can also install Docker Compose by following the instructions on this link (https://docs.docker.com/compose/install/)
-2. Create a new file named `docker-compose.yml` in the root of your project and paste the following content:
-
-```
-version: '3'
-services:
-keycloak:
-image: jboss/keycloak
-environment:
-- KEYCLOAK_USER=admin
-- KEYCLOAK_PASSWORD=password
-- PROXY_ADDRESS_FORWARDING=true
-ports:
-- "8080:8080"
-```
-
+2. Use the existing ```docker-compose.yml``` file in the root of the repo, you can find the file here: [docker-compose.yml](docker-compose.yaml)
 3. Run KeyCloak container by running the following command in the same directory where you created the `docker-compose.yml` file:
 
 
