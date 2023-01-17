@@ -3,7 +3,9 @@
 This GitHub repo contains code for a generic API in Python using the FastAPI framework. Includes examples for HTTP requests, auth, data validation, error handling, and has a config file for easy setup. Also includes example usage with a sample client app.
 
 ## Prerequisites
-Before running the code in this repository, you must have KeyCloak installed and configured using Docker Compose.
+Before running the code in this repository, you must create a ```.env``` file containing the necessary environment variables to run the framework and place it in the root of the repository, as explained [here](docs/env_file/env-file-description.md).
+
+Additionally, you must have KeyCloak installed and configured using Docker Compose.
 
 ### KeyCloak Installation using Docker Compose
 1. Make sure you have Docker and Docker Compose installed on your system. If not, you can download Docker from the official website (https://www.docker.com/get-started) and follow the instructions for your operating system to install it. If you install the Docker Desktop, Docker Compose may be installed automatically. You can also install Docker Compose by following the instructions on this link (https://docs.docker.com/compose/install/)
