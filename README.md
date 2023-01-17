@@ -11,7 +11,7 @@ Before running the code in this repository, you must have KeyCloak installed and
 3. Run KeyCloak container by running the following command in the root directory of the repository where the ```docker-compose.yml``` file is located:
 
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 4. Access the KeyCloak server by opening a web browser and navigating to `http://localhost:8080/auth`

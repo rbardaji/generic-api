@@ -3,8 +3,8 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=password
-      - PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
     ports:
       - "8080:8080"
+    command: start-dev
