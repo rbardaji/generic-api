@@ -14,7 +14,7 @@ Before running the code in this repository, you must have KeyCloak installed and
 docker-compose up -d
 ```
 
-4. Access the KeyCloak server by opening a web browser and navigating to `http://localhost:8080/auth`
+4. Access the KeyCloak server by opening a web browser and navigating to `http://localhost:8080/admin`
 5. Create a new realm and configure it to your needs.
 
 ### KeyCloak Configuration
