@@ -1,4 +1,5 @@
-# generic-api
+# <div align="center"><img src="docs/img/api-logo.jpg" alt="API Logo" style="width: 20%;"> <p align="center"> generic-api </p></div>
+
 This GitHub repo contains code for a generic API in Python using the FastAPI framework. Includes examples for HTTP requests, auth, data validation, error handling, and has a config file for easy setup. Also includes example usage with a sample client app.
 
 ## Prerequisites
