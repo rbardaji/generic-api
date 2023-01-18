@@ -22,3 +22,16 @@ Once you have completed these steps, you should be able to run the code in this 
 
 Please note that the code in this repository is just an example and you will need to adapt it to your own needs.
 Please also note that, if you want to run keycloak on different ports or use different environment variables, you can change them accordingly in the `docker-compose.yml` file.
+
+### Viewing the Execution Results
+Once you have completed the installation steps outlined above and run the command `docker-compose up -d`, the API, MongoDB, and Keycloak will be running on your localhost at the ports specified in the `.env` file. To access these services, you can simply open a web browser and enter the URL of the localhost along with the appropriate port number.
+
+For example, if the API is running on port `8000`, you can access it by entering the URL `http://localhost:8000` in your web browser. Similarly, if MongoDB is running on port `27017`, you can access it by entering `http://localhost:27017`.
+
+You can also view the logs of the running services by running `docker-compose logs -f` command in the root directory of the repository where the `docker-compose.yml` file is located. This will display the logs of all the services in real time.
+
+Additionally, you can check the status of the services by running `docker-compose ps`. This command will show you the current status of all the services running in the compose file.
+
+In order to stop the services, `run docker-compose down` command in the root directory of the repository where the `docker-compose.yml` file is located.
+
+Please note that the ports and URLs used in the examples above are based on the default settings in the `docker-compose.yml` file and `.env` file. If you have configured different ports or URLs, you will need to use those instead.
