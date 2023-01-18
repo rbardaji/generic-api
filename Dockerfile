@@ -16,7 +16,3 @@ COPY ./requirements.txt /code/requirements.txt
 # locally, as that is only if pip was going to be run again to install the same
 # packages, but that's not the case when working with containers.
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
-
-# 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
