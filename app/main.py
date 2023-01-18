@@ -1,11 +1,14 @@
 import dotenv
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 
 # Import the dotenv library to load environment variables from .env file
-config = dotenv.load_dotenv()
+config = dotenv.dotenv_values(".env")
 
 # Create a new FastAPI application
 app = FastAPI()
@@ -20,6 +23,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount the 'StaticFiles' class at the route '/static'
+# This allows the application to serve static files from the 'static' directory
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+# Create an instance of the 'Jinja2Templates' class
+# This class allows to use Jinja2 template engine to render the HTML pages
+# and will look into the directory specified to find the correct templates
+templates = Jinja2Templates(directory="app/templates")
+
 
 # Define a function that runs when the application starts up
 @app.on_event("startup")
@@ -47,10 +60,12 @@ def shutdown_db_client():
     app.mongodb_client.close()
 
 # Define a function that handles GET requests to the root route
-@app.get("/")
-async def root():
-    # Return a JSON response with message "API is working!"
-    return {"message": "API is working!"}
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "message": "API is running."
+    })
 
 if __name__ == "__main__":
     # Start the web server on localhost at port 5000
