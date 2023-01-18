@@ -72,3 +72,9 @@ The `MONGO_DATA_FOLDER` is the directory on your local host where the MongoDB's 
 `GENERIC_API_PORT` is the port number on which the Generic API container will be listening. This is used to specify the port that the Generic API container will be listening on.
 
 **Default**: 8008
+
+### MONGO_DB_NAME
+
+`MONGO_DB_NAME` is the name of the MongoDB database that will be used by the Generic API. 
+
+**Default**: generic-api
