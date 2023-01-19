@@ -84,3 +84,23 @@ After the client is created you need to update the following values for the clie
 <div align="center"><img src="./img/add-client-2.png" alt="Add client 2"></div>
 
 Remember to click `Save`.
+
+## Create a 'secret' for the client admin_cli
+
+Knowing the 'secret' of the admin_cli client is crucial for administering the Keycloak server and managing users. This secret, along with the admin username and password, is required to authenticate as an administrator and perform actions such as creating or deleting users. It is important to keep this secret secure and not share it with unauthorized parties.
+
+In order to use the admin_cli client, the secret must be added to the KEYCLOAK_ADMIN_SECRET environment variable in the .env file of your application. This will allow your application to authenticate as the admin_cli client and perform the necessary actions on the Keycloak server. Without this secret, your application will not have the necessary permissions to manage users or perform other administrative tasks.
+
+To retrieve the secret for the admin_cli client, follow these steps:
+
+1. Open the `Keycloak Admin Console` by navigating to the URL http://localhost:8080/admin (change the port as needed).
+2. Log in with the admin username and password.
+3. Click on the Realm dropdown at the top-left of the page and select Master.
+4. Click on Clients in the left-hand menu.
+5. Click on the admin_cli client.
+6. On the `Settings` tab, scroll down to the `Configure capability` section and turn on the switch for `Client Authentication`
+7. Click on Save button to save the changes. Now you will see the Credentials tab appearing.
+8. Click on the Credentials tab.
+9. Copy the client secret and paste it in the environment variable from the .env file called KEYCLOAK_ADMIN_SECRET.
+
+<div align="center"><img src="./img/client-credentials.png" alt="Add client 2"></div>

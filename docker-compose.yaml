@@ -26,12 +26,12 @@ services:
   generic-api:
     container_name: generic-api
     build: .
-    working_dir: /code/app
-    command: uvicorn main:app --host 0.0.0.0 --reload
+    working_dir: /code
+    command: uvicorn app.main:app --host 0.0.0.0 --reload
     environment:
       DEBUG: 1
     volumes:
-      - ./app:/code/app
+      - .:/code
     ports:
       - "${GENERIC_API_PORT}:8000"
     restart: always

@@ -7,6 +7,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 
+from .routers import user_router
+
 # Import the dotenv library to load environment variables from .env file
 config = dotenv.dotenv_values(".env")
 
@@ -66,6 +68,10 @@ async def home(request: Request):
         "request": request,
         "message": "API is running."
     })
+
+
+app.include_router(user_router.router, tags=["users"], prefix="/user")
+
 
 if __name__ == "__main__":
     # Start the web server on localhost at port 5000
