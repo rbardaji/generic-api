@@ -337,3 +337,66 @@ def delete_user_keycloak(user_id):
 
     # Return the status code of the response
     return response.status_code
+
+
+def update_user(user_id, new_user_information: dict):
+    """
+    Update user information
+
+    Parameters
+    ----------
+    user_id : str
+        id of the user
+    new_user_information : dict
+        new user information
+
+    Returns
+    -------
+    status_code : int
+        status code of the response
+    """
+    admin_header = get_admin_header_keycloak()
+
+    # Define the Keycloak endpoint url
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+        f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+
+    # Delete all None values from the new user information
+    new_user_information = {
+        k: v for k, v in new_user_information.items() if v is not None
+    }
+
+    if 'password' in new_user_information:
+        response = requests.put(
+            f'{keycloak_endpoint}/{user_id}/reset-password',
+            headers=admin_header,
+            json={
+                "type": "password",
+                "temporary": False,
+                "value": new_user_information['password']
+            }
+        )
+
+        del new_user_information['password']
+
+        if response.status_code == 204:
+            pass
+        else:
+            return 500
+
+    if 'first_name' in new_user_information:
+        new_user_information['firstName'] = new_user_information['first_name']
+        del new_user_information['first_name']
+    if 'last_name' in new_user_information:
+        new_user_information['lastName'] = new_user_information['last_name']
+        del new_user_information['last_name']
+    if new_user_information:
+        response = requests.put(
+            f'{keycloak_endpoint}/{user_id}', headers=admin_header,
+            json=new_user_information
+        )
+        if response.status_code == 204:
+            return response.status_code
+        else:
+            return 500
+    return 204

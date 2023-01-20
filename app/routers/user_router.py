@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, HTTPException, status, Depends
 from fastapi.encoders import jsonable_encoder
-from ..models.user_model import NewUser, User
+from ..models.user_model import NewUser, User, UpdateUser
 from ..services import keycloak_services
 
 router = APIRouter()
@@ -100,3 +100,43 @@ def delete_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error deleting the user"
         )
+
+
+@router.put(
+    "/{user_id}", responses={
+        204: {
+            "description": "User deleted"
+        },
+        403: {
+            "description": "FORBIDDEN: You cannot modify the user",
+        },
+        500: {
+            "description": "Error occurred while modifying the user"
+        }
+    }, summary="Update user info. NOTE: The updated info will be shown " + \
+        "when you refresh the token"
+)
+def update_user(
+    user_id: str, update_info: UpdateUser, response: Response,
+    current_user: User = Depends(keycloak_services.get_current_user),
+):
+    # Check if the user is trying to delete itself
+    if user_id != current_user['id']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"You cannot modify the user with id {user_id}"
+        )
+
+    # Decode the JSON body
+    info_encoded = jsonable_encoder(update_info)
+    response_code = keycloak_services.update_user(
+        user_id=current_user['id'], new_user_information=info_encoded
+    )
+    if response_code != 204:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error occurred while modifying the user"
+        )
+    else:
+        response.status_code = 204
+        return response

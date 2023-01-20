@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import Union
+
 
 class NewUser(BaseModel):
     username: str
@@ -13,3 +15,11 @@ class User(BaseModel):
     first_name: str
     last_name: str
     email: str
+
+# User to be updated
+class UpdateUser(BaseModel):
+    username: Union[str, None] = None
+    email: Union[str, None] = None
+    first_name: Union[str, None] = None
+    last_name: Union[str, None] = None
+    password: Union[str, None] = None
