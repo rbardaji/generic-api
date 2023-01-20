@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, HTTPException, status
+from fastapi import APIRouter, Response, HTTPException, status, Depends
 from fastapi.encoders import jsonable_encoder
 from ..models.user_model import NewUser, User
 from ..services import keycloak_services
@@ -48,3 +48,9 @@ async def create_user(new_user: NewUser, response: Response):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail='Error creating the user'
         )
+
+
+@router.get("/me", response_model=User)
+async def read_users_me(
+    current_user: User = Depends(keycloak_services.get_current_user)):
+    return current_user

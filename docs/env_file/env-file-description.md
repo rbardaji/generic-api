@@ -4,6 +4,26 @@ This document provides information about environment variables available for con
 
 We have created an [.env_template file](./.env_template) for you to use as a template. Rename the file to .env and move it to the root of your repository to get started.
 
+## OpenAPI configurarion
+
+### TITLE
+
+`TITLE` is the text that is displayed on the OpenAPI documentation page.
+
+**Default**: Generic API
+
+### DESCRIPTION
+
+`DESCRIPTION` is the text that describes the purpose of the API. It is displayed on the OpenAPI documentation page.
+
+**Default**: Generic API
+
+### VERSION
+
+`VERSION` of the API.
+
+**Default**: 1.0.0
+
 ## Keycloak Docker Image
 
 ### KEYCLOAK_VERSION
@@ -38,13 +58,17 @@ We have created an [.env_template file](./.env_template) for you to use as a tem
 
 ### KEYCLOAK_ADMIN_SECRET
 
-`KEYCLOAK_ADMIN_SECRET` is the secret used to access the Keycloak admin API. This secret is used to configure the Generic API to communicate with the Keycloak server. It is important to note that this variable cannot be completed until Keycloak has been properly configured and the secret has been obtained (more information [here](../keycloak-configuration.md)). Once the secret has been obtained and the variable has been set, it will be necessary to restart the docker-compose ```docker-compose restart``` in order for the changes to take effect.
+`KEYCLOAK_ADMIN_SECRET` is the secret used to access the Keycloak admin API. This secret is used to configure the Generic API to communicate with the Keycloak server. It is important to note that this variable cannot be completed until Keycloak has been properly configured and the secret has been obtained (more information [here](../keycloak-configuration.md)). Once the secret has been obtained and the variable has been set, it will be necessary to restart the docker-compose ```docker-compose down``` and ```docker-compose up --build --force-recreate --no-deps -d``` in order for the changes to take effect.
 
 ### KEYCLOAK_REALM
 
 `KEYCLOAK_REALM` is the name of the realm that will be used by the Generic API for authentication. This variable specifies the realm within the Keycloak server that the Generic API will use to authenticate and authorize users. The default value is "myrealm", but it can be [set]((../keycloak-configuration.md)) to any realm created on Keycloak server.
 
 **Default**: myrealm
+
+### KEYCLOAK_REALM_SECRET
+
+`KEYCLOAK_REALM_SECRET` is the secret used to access the Keycloak REALM API. This secret is used to configure the Generic API to communicate with the your REALM from the Keycloak server. It is important to note that this variable cannot be completed until Keycloak has been properly configured and the secret has been obtained (more information [here](../keycloak-configuration.md)). Once the secret has been obtained and the variable has been set, it will be necessary to restart the docker-compose ```docker-compose down``` and ```docker-compose up --build --force-recreate --no-deps -d``` in order for the changes to take effect.
 
 ### KEYCLOAK_DATA_FOLDER
 

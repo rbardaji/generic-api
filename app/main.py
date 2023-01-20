@@ -5,9 +5,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from pymongo import MongoClient
 
-from .routers import user_router
+from .routers import user_router, token_router
 
 # Import the dotenv library to load environment variables from .env file
 config = dotenv.dotenv_values(".env")
@@ -71,7 +72,26 @@ async def home(request: Request):
 
 
 app.include_router(user_router.router, tags=["users"], prefix="/user")
+app.include_router(token_router.router, tags=["tokens"], prefix="/token")
 
+def custom_openapi():
+    """
+    Generates an OpenAPI schema for the Flask application by calling the get_openapi function and passing in
+    the title, version, description, and routes of the application. The generated schema is cached in the
+    app.openapi_schema attribute for future use.
+    """
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=config["TITLE"],
+        version=config["VERSION"],
+        description=config["DESCRIPTION"],
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 if __name__ == "__main__":
     # Start the web server on localhost at port 5000
