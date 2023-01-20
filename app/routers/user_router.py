@@ -50,7 +50,53 @@ async def create_user(new_user: NewUser, response: Response):
         )
 
 
-@router.get("/me", response_model=User)
+@router.get("/me", responses={
+        200: {
+            "model": User,
+            "description": "Info from the user"
+        },
+        404: {
+            "description": "User not found",
+        },
+        500: {
+            "description": "Error getting the user info"
+        }
+    }
+)
 async def read_users_me(
     current_user: User = Depends(keycloak_services.get_current_user)):
     return current_user
+
+
+@router.delete("/{user_id}", responses={
+        204: {
+            "description": "User deleted"
+        },
+        403: {
+            "description": "FORBIDDEN: You cannot delete the user",
+        },
+        500: {
+            "description": "Error deleting the user"
+        }
+    }
+)
+def delete_user(
+    response: Response, user_id: str,
+    current_user: User = Depends(keycloak_services.get_current_user)
+):
+    # Check if the user is trying to delete itself
+    if user_id != current_user['id']:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"You cannot delete the user with id {user_id}"
+        )
+    # Delete the user from the Keycloak server
+    status_code = keycloak_services.delete_user_keycloak(current_user['id'])
+    if status_code == 204:
+        response.status_code = status.HTTP_204_NO_CONTENT
+        return response
+    else:
+        HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error deleting the user"
+        )

@@ -12,17 +12,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 config = dotenv_values(".env")
 
 
-# Client configuration
-# keycloak_url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}'
-# keycloak_openid = KeycloakOpenID(
-#     server_url=keycloak_url,
-#     client_id='admin-cli',
-#     realm_name=config["KEYCLOAK_REALM"],
-#     client_secret_key=config["KEYCLOAK_ADMIN_SECRET"],
-#     verify=False
-# )
-
-
 def get_admin_header_keycloak():
     """
     This function is used to get the access token of the keycloak admin user
@@ -229,7 +218,20 @@ def get_user_info(username):
 
 
 def get_user_info_from_token(token):
-    
+    """
+    This function is used to get the details of a user from a token
+
+    Parameters
+    ----------
+    token : str
+        token of the user
+
+    Returns
+    -------
+    user_info : dict
+        details of the user
+    """
+    # Define headers for the request to the keycloak endpoint
     headers = {
         "Connection": "keep-alive",
         "Content-Type": "application/x-www-form-urlencoded",
@@ -237,20 +239,25 @@ def get_user_info_from_token(token):
         "Accept-Encoding": "gzip, deflate, br"
         }
 
+    # Define the payload for the request to the keycloak endpoint
     payload = {
         'client_id': 'admin-cli',
         'client_secret': config['KEYCLOAK_REALM_SECRET'],
         'token': token}
     
+    # Define the keycloak endpoint url
     keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
         f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token/introspect'
 
     try:
+        # Send the request to the keycloak endpoint
         response = requests.post(
             keycloak_endpoint, headers=headers, data=payload, verify=False
         )
 
+        # If the response is successful
         if response.status_code == 200:
+            # Extract the relevant information from the response
             user_keycloak = response.json()
             user_info = {}
             user_info['id'] = user_keycloak['sub']
@@ -260,23 +267,38 @@ def get_user_info_from_token(token):
             user_info['last_name'] = user_keycloak['family_name']
             return user_info
         else:
-            return 'Could not validate credentials'
+            return {'error': 'Could not validate credentials'}
     except Exception as e:
-        return 'Server error'
+        return {'error': 'Server error'}
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
+    """
+    This function is used to get the current user
+
+    Parameters
+    ----------
+    token : str
+        token of the user
+
+    Returns
+    -------
+    user : dict
+        details of the user
+    """
+    # Define an exception to be raised if the credentials cannot be validated
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        # Get the user information
         user = get_user_info_from_token(token)
     except:
         raise credentials_exception
-    if isinstance(user, str):
-        if user == 'Could not validate credentials':
+    if 'error' in user:
+        if user['error'] == 'Could not validate credentials':
             raise credentials_exception
         else:
             raise HTTPException(
@@ -286,3 +308,32 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
             )
     else:
         return user
+
+
+def delete_user_keycloak(user_id):
+    """
+    This function is used to delete a user from Keycloak
+
+    Parameters
+    ----------
+    user_id : str
+        id of the user
+
+    Returns
+    -------
+    status_code : int
+        status code of the response
+    """
+    # Get the admin headers for the request to the Keycloak endpoint
+    admin_header = get_admin_header_keycloak()
+    
+    # Define the Keycloak endpoint url
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+        f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    # Send a DELETE request to the Keycloak endpoint to delete the user
+    response = requests.delete(
+        f'{keycloak_endpoint}/{user_id}', headers=admin_header
+    )
+
+    # Return the status code of the response
+    return response.status_code
