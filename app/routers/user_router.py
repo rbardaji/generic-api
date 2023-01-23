@@ -105,7 +105,7 @@ def delete_user(
 @router.put(
     "/{user_id}", responses={
         204: {
-            "description": "User deleted"
+            "description": "User info updated"
         },
         403: {
             "description": "FORBIDDEN: You cannot modify the user",

@@ -18,7 +18,6 @@ class User(BaseModel):
 
 # User to be updated
 class UpdateUser(BaseModel):
-    username: Union[str, None] = None
     email: Union[str, None] = None
     first_name: Union[str, None] = None
     last_name: Union[str, None] = None
