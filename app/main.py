@@ -9,6 +9,7 @@ from fastapi.openapi.utils import get_openapi
 from pymongo import MongoClient
 
 from .routers import user_router, token_router, record_one_router
+from .services import keycloak_services
 
 # Import the dotenv library to load environment variables from .env file
 config = dotenv.dotenv_values(".env")
@@ -65,9 +66,12 @@ def shutdown_db_client():
 # Define a function that handles GET requests to the root route
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
+    # Get the number of users
+    users = keycloak_services.get_all_users()
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "message": "API is running."
+        "title": f"{config['TITLE']} v{config['VERSION']} Dashboard",
+        "users": users,
     })
 
 
