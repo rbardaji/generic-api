@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from pymongo import MongoClient
 
-from .routers import user_router, token_router
+from .routers import user_router, token_router, record_one_router
 
 # Import the dotenv library to load environment variables from .env file
 config = dotenv.dotenv_values(".env")
@@ -72,6 +72,7 @@ async def home(request: Request):
 
 
 app.include_router(user_router.router, tags=["users"], prefix="/user")
+app.include_router(record_one_router.router, tags=["records"], prefix="/record")
 app.include_router(token_router.router, tags=["tokens"], prefix="/token")
 
 def custom_openapi():
