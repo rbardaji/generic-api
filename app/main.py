@@ -72,7 +72,7 @@ async def home(request: Request):
 
 
 app.include_router(user_router.router, tags=["users"], prefix="/user")
-app.include_router(record_one_router.router, tags=["records"], prefix="/record")
+app.include_router(record_one_router.router, tags=[config['RECORD_ONE_TAG']], prefix=f"/{config['RECORD_ONE_NAME']}")
 app.include_router(token_router.router, tags=["tokens"], prefix="/token")
 
 def custom_openapi():
