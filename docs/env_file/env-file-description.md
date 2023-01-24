@@ -118,3 +118,17 @@ The `MONGO_DATA_FOLDER` is the directory on your local host where the MongoDB's 
 `MONGO_DB_NAME` is the name of the MongoDB database that will be used by the Generic API. 
 
 **Default**: generic-api
+
+## Record configuration
+
+### RECORD_ONE_NAME
+
+`RECORD_ONE_NAME` is the name of the first record. This variable is used to specify the name of the first record that will be created in the API.
+
+**Default**: record
+
+### RECORD_ONE_TAG
+
+`RECORD_ONE_TAG` is the tag associated with the first record. This variable is used to specify the tag that will be associated with the first record in the API.
+
+**Default**: records
