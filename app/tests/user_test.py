@@ -124,6 +124,103 @@ def _update_test_user_1(client):
     return True
 
 
+def _update_test_user_2_with_test_user_1_token(client):
+    """
+    Tries to update test_user_2 with the token from test_user_1
+    Tested endpoints:
+    - POST /token
+    - PUT /user/{user_id}
+    """
+    # Get token from test_user_1
+    # CAUTION: At this point, test_user_1 has already been updated with a new
+    # password
+    response = client.post(
+        "/token",
+        data={"username": "test_user_1", "password": "updated_test_password"}
+    )
+    assert response.status_code == 200
+    token_user_1 = response.json()["access_token"]
+    # Get token from test_user_2
+    response = client.post(
+        "/token", data={"username": "test_user_2", "password": "test_password"}
+    )
+    assert response.status_code == 200
+    token_user_2 = response.json()["access_token"]
+    # Get user_id from test_user_2
+    response = client.get(
+        "/user/me", headers={"Authorization": f"Bearer {token_user_2}"}
+    )
+    assert response.status_code == 200
+    user_2_id = response.json()["id"]
+    # Try to update test_user_2 with the token from test_user_1
+    response = client.put(
+        f"/user/{user_2_id}",
+        headers={"Authorization": f"Bearer {token_user_1}"},
+        json={"first_name": "Updated first name"}
+    )
+    assert response.status_code == 403
+    return True
+
+
+def _delete_test_user_2_with_test_user_1_token(client):
+    """
+    Tries to update test_user_2 with the token from test_user_1
+    Tested endpoints:
+    - POST /token
+    - PUT /user/{user_id}
+    """
+    # Get token from test_user_1
+    # CAUTION: At this point, test_user_1 has already been updated with a new
+    # password
+    response = client.post(
+        "/token",
+        data={"username": "test_user_1", "password": "updated_test_password"}
+    )
+    assert response.status_code == 200
+    token_user_1 = response.json()["access_token"]
+    # Get token from test_user_2
+    response = client.post(
+        "/token", data={"username": "test_user_2", "password": "test_password"}
+    )
+    assert response.status_code == 200
+    token_user_2 = response.json()["access_token"]
+    # Get user_id from test_user_2
+    response = client.get(
+        "/user/me", headers={"Authorization": f"Bearer {token_user_2}"}
+    )
+    assert response.status_code == 200
+    user_2_id = response.json()["id"]
+    # Try to delete test_user_2 with the token from test_user_1
+    response = client.delete(
+        f"/user/{user_2_id}",
+        headers={"Authorization": f"Bearer {token_user_1}"}
+    )
+    assert response.status_code == 403
+    return True
+
+
+def _get_all_users(client):
+    """
+    Get all users
+    Tested endpoints:
+    - GET /user
+    """
+    # Get token from test_user_2
+    response = client.post(
+        "/token", data={"username": "test_user_2", "password": "test_password"}
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    # Get all users with the token from test_user_2
+    response = client.get(
+        "/user", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    # Try to get all users without a token
+    response = client.get("/user")
+    assert response.status_code == 401
+    return True
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be
@@ -137,7 +234,7 @@ def test_all_test():
         - POST /token
         - DELETE /user/{user_id}
         - GET /user/me
-    2. Create a test users
+    2. Create the test users
         Tested endpoints:
         - POST /user
     3. Update a test_user_1
@@ -145,6 +242,15 @@ def test_all_test():
         - POST /token
         - PUT /user/{user_id}
         - GET /user/me
+    4. Try to update the test_user_2 with the token from test_user_1
+        Tested endpoints:
+        - POST /token
+        - PUT /user/{user_id}
+    5. Try to delete the test_user_2 with the token from test_user_1
+        Tested endpoints:
+        - POST /token
+        - DELETE /user/{user_id}
+    6. Get the list from all users with and without a valid token
     Last. Delete all test users (again)
     """
     with TestClient(app) as client:
@@ -154,5 +260,11 @@ def test_all_test():
         _create_test_users(client)
         # 3. Update a test_user_1
         _update_test_user_1(client)
+        # 4. Try to update the test_user_2 with the token from test_user_1
+        _update_test_user_2_with_test_user_1_token(client)
+        # 5. Try to delete the test_user_2 with the token from test_user_1
+        _delete_test_user_2_with_test_user_1_token(client)
+        # 6. Get the list from all users with and without a valid token
+        _get_all_users(client)
         # Last. Delete all test users (again)
         _delete_test_users(client)

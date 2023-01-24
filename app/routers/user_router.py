@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Response, HTTPException, status, Depends
 from fastapi.encoders import jsonable_encoder
+from typing import List
+
 from ..models.user_model import NewUser, User, UpdateUser
 from ..services import keycloak_services
 
@@ -140,3 +142,29 @@ def update_user(
     else:
         response.status_code = 204
         return response
+
+
+@router.get('',
+    responses={
+        200: {
+            "model": List[User],
+            "description": "List of users",
+        },
+        401: {
+            "description": "UNAUTHORIZED",
+        },
+        500: {
+            "description": "Error getting the users"
+        }
+    }
+)
+async def read_users(
+    _: User = Depends(keycloak_services.get_current_user)):
+    # Get all users from the keycloak server
+    users = keycloak_services.get_all_users()
+    if 'error' in users:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Error getting the users'
+        )
+    return users

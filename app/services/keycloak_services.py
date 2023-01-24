@@ -400,3 +400,40 @@ def update_user(user_id, new_user_information: dict):
         else:
             return 500
     return 204
+
+
+def get_all_users():
+    """
+    This function is used to get all users
+
+    Returns
+    -------
+    users : list
+        list of all users
+    """
+    # Get the admin headers for the request to the Keycloak endpoint
+    admin_header = get_admin_header_keycloak()
+
+    # Define the Keycloak endpoint url
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+        f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+
+    # Send a GET request to the Keycloak endpoint to get all users
+    response = requests.get(keycloak_endpoint, headers=admin_header)
+
+    # If the response is successful
+    if response.status_code == 200:
+        # Extract the relevant information from the response
+        users = response.json()
+        return_users = []
+        for user in users:
+            user_info = {}
+            user_info['id'] = user['id']
+            user_info['username'] = user['username']
+            user_info['email'] = user.get('email', 'Not provided')
+            user_info['first_name'] = user['firstName']
+            user_info['last_name'] = user['lastName']
+            return_users.append(user_info)
+        return return_users
+    else:
+        return {'error': 'Server error'}
