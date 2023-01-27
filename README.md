@@ -35,3 +35,5 @@ Additionally, you can check the status of the services by running `docker-compos
 In order to stop the services, `run docker-compose down` command in the root directory of the repository where the `docker-compose.yml` file is located.
 
 Please note that the ports and URLs used in the examples above are based on the default settings in the `docker-compose.yml` file and `.env` file. If you have configured different ports or URLs, you will need to use those instead.
+
+To create a development environment and be able to test or modify the code, you must follow the instructions in [Creating a Development Environment](docs/environment-for-development.md). Once the environment is created, you will be able to run the code and make changes as needed. It is important to remember that any changes you make must be properly tested before they are deployed to production.
