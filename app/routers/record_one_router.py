@@ -32,6 +32,21 @@ def create_record_one(
         new_record_one["title"], request
     )
     if unique:
+        # Check if the editors or viewers are valid users
+        if "editors" in new_record_one:
+            for editor in new_record_one["editors"]:
+                if not keycloak_services.user_exists(editor):
+                    raise HTTPException(
+                        status_code=404,
+                        detail='Editor not found'
+                    )
+        if "viewers" in new_record_one:
+            for viewer in new_record_one["viewers"]:
+                if not keycloak_services.user_exists(viewer):
+                    raise HTTPException(
+                        status_code=404,
+                        detail='Viewer not found'
+                    )
         response.status_code = 201
         new_record = record_one_services.create_record_one(
             new_record_one, current_user['username'], request
