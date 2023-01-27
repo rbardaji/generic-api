@@ -55,7 +55,7 @@ def create_record_one(record_one: dict, username: str, request) -> dict:
     return new_record
 
 
-def get_records_one(request) -> list:
+def get_records_one(username, request) -> list:
     """
     Get all the records
 
@@ -64,7 +64,9 @@ def get_records_one(request) -> list:
     list
         The list of records
     """
-    records = list(request.app.database[config["RECORD_ONE_NAME"]].find())
+    # Get all records from the database with the owner username or visible True
+    records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+        {"$or": [{"owner": username}, {"visible": True}]}))
     # Convert the ObjectId to string
     for record in records:
         record["id"] = str(record["_id"])
@@ -120,7 +122,6 @@ def update_record_one(record_id: str, record_one: dict, request) -> dict:
         if value is not None:
             actual_record[key] = value
     del actual_record["_id"]
-    print(actual_record)
     # Update the record in the database
     request.app.database[config["RECORD_ONE_NAME"]].update_one(
         {"_id": ObjectId(record_id)},
@@ -132,7 +133,6 @@ def update_record_one(record_id: str, record_one: dict, request) -> dict:
     # Convert the ObjectId to string
     updated_record["id"] = str(updated_record["_id"])
     del updated_record["_id"]
-    print(updated_record)
     return updated_record
 
 
@@ -156,9 +156,22 @@ def delete_record_one(record_id: str, request) -> dict:
     if record is None:
         return False
     else:
-        request.app.database[config["RECORD_ONE_NAME"]].delete_one(
-            {"_id": ObjectId(record_id)}
-        )
+        # Delete the record if there are not editors
+        if record["editors"] is None or len(record["editors"]) == 0:
+            request.app.database[config["RECORD_ONE_NAME"]].delete_one(
+                {"_id": ObjectId(record_id)}
+            )
+        else:
+            # Change the owner of the record to the first editor
+            request.app.database[config["RECORD_ONE_NAME"]].update_one(
+                {"_id": ObjectId(record_id)},
+                {"$set": {"owner": record["editors"][0]}}
+            )
+            # Delete the first editor
+            request.app.database[config["RECORD_ONE_NAME"]].update_one(
+                {"_id": ObjectId(record_id)},
+                {"$pop": {"editors": -1}}
+            )
         return True
 
 
@@ -222,3 +235,34 @@ def is_owned(record_id: str, username: str, request) -> bool:
         return True
     else:
         return False
+
+
+def get_records_one_me(username, request) -> list:
+    """
+    Get all the records of the user
+
+    Parameters
+    ----------
+    username: str
+        The username of the owner, editor or viewer
+
+    Returns
+    -------
+    list
+        The list of records
+    """
+    # Get the records of the owner, editor or viewer
+    records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+        {
+            "$or": [
+                {"owner": username},
+                {"editors": username},
+                {"viewers": username}
+            ]
+        }
+    ))
+    # Convert the ObjectId to string
+    for record in records:
+        record["id"] = str(record["_id"])
+        del record["_id"]
+    return records

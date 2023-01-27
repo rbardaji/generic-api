@@ -8,6 +8,50 @@ from ..services import keycloak_services, record_one_services
 router = APIRouter()
 
 
+
+@router.get("",
+    responses={
+        200: {
+            "model": List[RecordOne],
+            "description": "List of records"
+        },
+        500: {
+            "description": "Error getting the records"
+        }
+    }
+)
+def get_records_one(
+    response: Response, request: Request,
+    current_user: User = Depends(keycloak_services.optional_get_current_user)
+):
+    response.status_code = 200
+    if current_user:
+        username = current_user['username']
+    else:
+        username = None
+    return record_one_services.get_records_one(username, request)
+
+
+@router.get("/me",
+    responses={
+        200: {
+            "model": List[RecordOne],
+            "description": "List of records"
+        },
+        500: {
+            "description": "Error getting the records"
+        }
+        }
+)
+def get_records_one_me(
+    response: Response, request: Request,
+    current_user: User = Depends(keycloak_services.get_current_user)
+):
+    response.status_code = 200
+    return record_one_services.get_records_one_me(
+        current_user['username'], request
+    )
+
 @router.post("", 
     responses={
         201: {
@@ -33,14 +77,14 @@ def create_record_one(
     )
     if unique:
         # Check if the editors or viewers are valid users
-        if "editors" in new_record_one:
+        if "editors" in new_record_one and new_record_one["editors"]:
             for editor in new_record_one["editors"]:
                 if not keycloak_services.user_exists(editor):
                     raise HTTPException(
                         status_code=404,
                         detail='Editor not found'
                     )
-        if "viewers" in new_record_one:
+        if "viewers" in new_record_one and new_record_one["viewers"]:
             for viewer in new_record_one["viewers"]:
                 if not keycloak_services.user_exists(viewer):
                     raise HTTPException(
@@ -61,24 +105,6 @@ def create_record_one(
             status_code=409,
             detail='Title already exists'
         )
-
-
-@router.get("",
-    responses={
-        200: {
-            "model": List[RecordOne],
-            "description": "List of records"
-        },
-        500: {
-            "description": "Error getting the records"
-        }
-    }
-)
-def get_records_one(
-    response: Response, request: Request
-):
-    response.status_code = 200
-    return record_one_services.get_records_one(request)
 
 
 @router.get("/{record_id}",
@@ -206,3 +232,4 @@ def delete_record_one(
             status_code=404,
             detail='Record not found'
         )
+

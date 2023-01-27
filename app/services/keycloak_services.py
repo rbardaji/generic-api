@@ -6,7 +6,9 @@ from fastapi import Depends, HTTPException, status
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
+optional_oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="token", auto_error=False
+)
 
 #dotenv_values reads the values from the .env file and create a dictionary object
 config = dotenv_values(".env")
@@ -309,6 +311,13 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     else:
         return user
 
+
+def optional_get_current_user(token: str = Depends(optional_oauth2_scheme)):
+    try:
+        user = get_current_user(token)
+    except:
+        user = {}
+    return user
 
 def delete_user_keycloak(user_id):
     """

@@ -221,6 +221,7 @@ def _get_all_users(client):
     assert response.status_code == 401
     return True
 
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be

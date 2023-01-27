@@ -4,7 +4,7 @@ from typing import List
 
 class NewRecordOne(BaseModel):
     title: str
-    description: str
+    description: Union[str, None] = None
     visible: bool = True
     editors: Union[List[str], None] = None
     viewers: Union[List[str], None] = None
