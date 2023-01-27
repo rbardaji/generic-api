@@ -35,3 +35,7 @@ pip install -r requirements.txt
 Using the command line tool "uvicorn" to execute the code with the command `uvicorn app.main:app --reload` on the root folder is necessary to execute code.
 
 It is recommended to run the code locally on a computer to test and debug it prior to deploying it to a production environment.
+
+# Running Tests
+
+It is recommended to run the pytest tests if changes have been made to the code. To run the tests, simply type the command `pytest` in the root directory of the repository. This will ensure that any changes made to the code have not broken any existing functionality.
