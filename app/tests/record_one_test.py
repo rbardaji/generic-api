@@ -269,8 +269,8 @@ def test_all_test():
         token
         Tested endpoints:
         - GET /record
-    12. Check that the record does not exists when get the list of records with the token
-        from test_user_2
+    12. Check that the record does not exists when get the list of records with 
+        the token from test_user_2
         Tested endpoints:
         - POST /token
         - GET /record/me

@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from pymongo import MongoClient
 
-from .routers import user_router, token_router, record_one_router
+from .routers import user_router, token_router, record_one_router, \
+    record_two_router
 from .services import keycloak_services
 
 # Import the dotenv library to load environment variables from .env file
@@ -77,6 +78,7 @@ async def home(request: Request):
 
 app.include_router(user_router.router, tags=["users"], prefix="/user")
 app.include_router(record_one_router.router, tags=[config['RECORD_ONE_TAG']], prefix=f"/{config['RECORD_ONE_NAME']}")
+app.include_router(record_two_router.router, tags=[config['RECORD_TWO_TAG']], prefix=f"/{config['RECORD_TWO_NAME']}")
 app.include_router(token_router.router, tags=["tokens"], prefix="/token")
 
 def custom_openapi():
