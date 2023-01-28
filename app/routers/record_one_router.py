@@ -1,24 +1,31 @@
 from fastapi import APIRouter, Depends, Body, Response, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from typing import List
+from dotenv import dotenv_values
 from ..models.user_model import User
 from ..models.record_one_model import RecordOne, NewRecordOne, UpdateRecordOne
 from ..services import keycloak_services, record_one_services
 
+
 router = APIRouter()
 
+
+#dotenv_values reads the values from the .env file and create a dictionary object
+config = dotenv_values(".env")
 
 
 @router.get("",
     responses={
         200: {
             "model": List[RecordOne],
-            "description": "List of records"
+            "description": f"List of all {config['RECORD_ONE_TAG']}."
         },
         500: {
-            "description": "Error getting the records"
+            "description": "There was an error retrieving the " + \
+                f"{config['RECORD_ONE_TAG']}."
         }
-    }
+    },
+    summary=f"Retrieve a list of all {config['RECORD_ONE_TAG']}."
 )
 def get_records_one(
     response: Response, request: Request,
@@ -36,12 +43,16 @@ def get_records_one(
     responses={
         200: {
             "model": List[RecordOne],
-            "description": "List of records"
+            "description": f"List of {config['RECORD_ONE_TAG']} " + \
+                "belonging to the current user."
         },
         500: {
-            "description": "Error getting the records"
+            "description": "There was an error retrieving the " + \
+                f"{config['RECORD_ONE_TAG']}."
         }
-        }
+    },
+    summary=f"Retrieve a list of {config['RECORD_ONE_TAG']} " + \
+        "belonging to the current user."
 )
 def get_records_one_me(
     response: Response, request: Request,
@@ -52,19 +63,27 @@ def get_records_one_me(
         current_user['username'], request
     )
 
+
 @router.post("", 
     responses={
         201: {
-            "model": User,
-            "description": "New record created"
+            "model": RecordOne,
+            "description": f"{config['RECORD_ONE_NAME']} successfully created"
+        },
+        400: {
+            "description": "Invalid request body"
+        },
+        404: {
+            "description": "Editor or viewer not found"
         },
         409: {
                 "description": "Title already exists",
         },
         500: {
-            "description": "Error creating the record"
+            "description": f"Error creating the {config['RECORD_ONE_NAME']}"
         }
-    }
+    },
+    summary=f"Create a new {config['RECORD_ONE_NAME']}."
 )
 def create_record_one(
     response: Response, request: Request, record_one: NewRecordOne = Body(),
@@ -107,129 +126,147 @@ def create_record_one(
         )
 
 
-@router.get("/{record_id}",
+@router.get("/{id}",
     responses={
         200: {
             "model": RecordOne,
-            "description": "The record"
+            "description": f"The {config['RECORD_ONE_NAME']}"
         },
         404: {
-            "description": "Record not found"
+            "description": f"{config['RECORD_ONE_NAME']} not found"
         },
         500: {
-            "description": "Error getting the record"
+            "description": "There was an error retrieving the " + \
+                f"{config['RECORD_ONE_NAME']}"
         }
-    }
+    },
+    summary=f"Retrieve a {config['RECORD_ONE_NAME']} given its ID."
 )
 def get_record_one(
-    response: Response, request: Request, record_id: str
+    response: Response, request: Request, id: str
 ):
-    record = record_one_services.get_record_one(record_id, request)
+    record = record_one_services.get_record_one(id, request)
     if record:
         response.status_code = 200
         return record
     else:
         raise HTTPException(
             status_code=404,
-            detail='Record not found'
+            detail=f"{config['RECORD_ONE_NAME']} not found"
         )
 
 
-@router.put("/{record_id}",
+@router.put("/{id}",
     responses={
         200: {
             "model": RecordOne,
-            "description": "The updated record"
+            "description": f"The {config['RECORD_ONE_NAME']} has been" + \
+                " updated successfully"
+        },
+        400: {
+            "description": "Invalid request body"
         },
         403: {
-            "description": "Forbidden"
+            "description": "Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you or you are not an editor"
         },
         404: {
-            "description": "Record not found"
+            "description": f"{config['RECORD_ONE_NAME']} not found"
         },
         500: {
-            "description": "Error updating the record"
+            "description": "There was an error updating the " + \
+                f"{config['RECORD_ONE_NAME']}."
         }
-    }
+    },
+    summary=f"Update a {config['RECORD_ONE_NAME']} given its ID."
 )
 def update_record_one(
-    response: Response, request: Request, record_id: str,
+    response: Response, request: Request, id: str,
     record_one: UpdateRecordOne = Body(),
     current_user: User = Depends(keycloak_services.get_current_user)
 ):
     record_one = jsonable_encoder(record_one)
     # Check if the record exists
-    record = record_one_services.get_record_one(record_id, request)
+    record = record_one_services.get_record_one(id, request)
     if not record:
         raise HTTPException(
             status_code=404,
-            detail='Record not found'
+            detail=f"{config['RECORD_ONE_NAME']} not found"
         )
     # Check if the record is owned or editable by the current user
     editable = record_one_services.is_editable(
-        record_id, current_user['username'], request)
+        id, current_user['username'], request)
     if not editable:
         raise HTTPException(
             status_code=403,
-            detail='Record not editable by you'
+            detail="Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you or you are not an editor"
         )
     record = record_one_services.update_record_one(
-        record_id, record_one, request
+        id, record_one, request
     )
     if record:
         response.status_code = 200
         return record
     else:
         raise HTTPException(
-            status_code=404,
-            detail='Record not found'
+            status_code=500,
+            detail="There was an error updating the " + \
+                f"{config['RECORD_ONE_NAME']}."
         )
 
 
-@router.delete("/{record_id}",
+@router.delete("/{id}",
     responses={
         204: {
-            "description": "Record deleted"
+            "description": f"{config['RECORD_ONE_NAME']} deleted"
         },
         403: {
-            "description": "Forbidden"
+            "description": "Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you"
         },
         404: {
-            "description": "Record not found"
+            "description": f"{config['RECORD_ONE_NAME']} not found"
         },
         500: {
-            "description": "Error deleting the record"
+            "description": "There was an error deleting the " + \
+                f"{config['RECORD_ONE_NAME']}"
         }
-    }
+    },
+    summary=f"Delete a {config['RECORD_ONE_NAME']} given its ID."
 )
 def delete_record_one(
-    response: Response, request: Request, record_id: str,
+    response: Response, request: Request, id: str,
     current_user: User = Depends(keycloak_services.get_current_user)
 ):
     # Check if the record exists
-    record = record_one_services.get_record_one(record_id, request)
+    record = record_one_services.get_record_one(id, request)
     if not record:
         raise HTTPException(
             status_code=404,
-            detail='Record not found'
+            detail=f"{config['RECORD_ONE_NAME']} not found"
         )
     # Check if the record is owned by the current user
     editable = record_one_services.is_owned(
-        record_id, current_user['username'], request)
+        id, current_user['username'], request
+    )
     if not editable:
         raise HTTPException(
             status_code=403,
             detail='Record not owned by you'
         )
     deleted = record_one_services.delete_record_one(
-        record_id, request
+        id, request
     )
     if deleted:
         response.status_code = 204
         return ''
     else:
         raise HTTPException(
-            status_code=404,
-            detail='Record not found'
+            status_code=500,
+            detail=f"There was an error deleting the " + \
+                f"{config['RECORD_ONE_NAME']}"
         )
-

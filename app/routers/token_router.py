@@ -6,7 +6,17 @@ from ..services import keycloak_services
 
 router = APIRouter()
 
-@router.post("", response_model=Token)
+@router.post("",
+    response_model=Token,
+    responses={
+        200: {
+            "description": "Successfully retrieved the access token"
+        },
+        401: {
+            "description": "Incorrect username or password"
+        }
+    },
+    summary="Retrieve an access token given the username and password.")
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends()):
     keycloak_token = keycloak_services.user_token_keycloak(

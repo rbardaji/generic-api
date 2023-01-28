@@ -19,9 +19,10 @@ router = APIRouter()
                 "description": "Username or email already exists",
         },
         500: {
-            "description": "Error creating the user"
+            "description": "There was an error creating the new user"
         }
-    }
+    },
+    summary="Create a new user."
 )
 async def create_user(new_user: NewUser, response: Response):
     # Decode the new user data
@@ -48,7 +49,7 @@ async def create_user(new_user: NewUser, response: Response):
     else:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Error creating the user'
+            detail='There was an error creating the new user'
         )
 
 
@@ -57,13 +58,14 @@ async def create_user(new_user: NewUser, response: Response):
             "model": User,
             "description": "Info from the user"
         },
-        404: {
-            "description": "User not found",
+        401: {
+            "description": "Unauthorized - Could not validate credentials",
         },
         500: {
-            "description": "Error getting the user info"
+            "description": "There was an error getting the user information"
         }
-    }
+    },
+    summary="Retrieve the information from the current user."
 )
 async def read_users_me(
     current_user: User = Depends(keycloak_services.get_current_user)):
@@ -74,13 +76,18 @@ async def read_users_me(
         204: {
             "description": "User deleted"
         },
+        401: {
+            "description": "Unauthorized - Could not validate credentials",
+        },
         403: {
-            "description": "FORBIDDEN: You cannot delete the user",
+            "description": "Forbidden - You are not authorized to perform " + \
+                f"this operation because the user ID does not belong to you",
         },
         500: {
-            "description": "Error deleting the user"
+            "description": "There was an error deleting the user"
         }
-    }
+    },
+    summary="Delete a user. NOTE: You only can delete yourself."
 )
 def delete_user(
     response: Response, user_id: str,
@@ -109,13 +116,18 @@ def delete_user(
         204: {
             "description": "User info updated"
         },
+        401: {
+            "description": "Unauthorized - Could not validate credentials",
+        },
         403: {
-            "description": "FORBIDDEN: You cannot modify the user",
+            "description": "Forbidden - You are not authorized to perform " + \
+                f"this operation because the user ID does not belong to you",
         },
         500: {
-            "description": "Error occurred while modifying the user"
+            "description": "There was an error updating the user"
         }
-    }, summary="Update user info. NOTE: The updated info will be shown " + \
+    },
+    summary="Update user info. NOTE: The updated info will be shown " + \
         "when you refresh the token"
 )
 def update_user(
@@ -151,12 +163,13 @@ def update_user(
             "description": "List of users",
         },
         401: {
-            "description": "UNAUTHORIZED",
+            "description": "Unauthorized - Could not validate credentials",
         },
         500: {
-            "description": "Error getting the users"
+            "description": "There was an error retrieving the users"
         }
-    }
+    },
+    summary="Retrieve all users."
 )
 async def read_users(
     _: User = Depends(keycloak_services.get_current_user)):

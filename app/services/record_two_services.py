@@ -55,7 +55,7 @@ def create_record_two(record_two: dict, username: str, request) -> dict:
     return new_record
 
 
-def get_records_one(username, request) -> list:
+def get_records_two(username, request) -> list:
     """
     Get all the records
 
@@ -237,7 +237,7 @@ def is_owned(record_id: str, username: str, request) -> bool:
         return False
 
 
-def get_records_one_me(username, request) -> list:
+def get_records_two_me(username, request) -> list:
     """
     Get all the records of the user
 
