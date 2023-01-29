@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Body, Response, HTTPException, Request
+from fastapi import APIRouter, Depends, Body, Response, HTTPException, \
+    Request, Query
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from dotenv import dotenv_values
@@ -53,13 +54,16 @@ def get_records_two(
     summary=f"Retrieve a list of {config['RECORD_TWO_TAG']} " + \
         "belonging to the current user."
 )
-def get_records_one_me(
+def get_records_two_me(
     response: Response, request: Request,
+    title: str = Query(
+        None, description="Optional - String to search in the title"
+    ),
     current_user: User = Depends(keycloak_services.get_current_user)
 ):
     response.status_code = 200
     return record_two_services.get_records_two_me(
-        current_user['username'], request
+        current_user['username'], title, request
     )
 
 

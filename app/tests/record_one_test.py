@@ -87,7 +87,7 @@ def _check_no_records_one_user_one(client):
     assert response.json() == []
 
 
-def _check_one_records_user_one(client):
+def _check_one_records_user_one(client, check_connection=False):
     """
     Check that test_user_1 has no records
     """
@@ -104,6 +104,8 @@ def _check_one_records_user_one(client):
     )
     assert response.status_code == 200
     assert len(response.json()) == 1
+    if check_connection:
+        assert len(response.json()[0]["connections"]) == 1
 
 
 def _check_records_user_one(client):
@@ -337,7 +339,7 @@ def test_all_test():
         # 11. Update the visibility of the record
         _update_test_record(client)
         # 12. Check that test_user_1 has one record
-        _check_one_records_user_one(client)
+        _check_one_records_user_one(client, check_connection=True)
         # 13. Check that the record not exists when get the list of records
         # without a token
         _check_no_records_no_token(client)

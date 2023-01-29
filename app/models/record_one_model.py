@@ -13,7 +13,7 @@ class NewRecordOne(BaseModel):
     title: str
     description: Union[str, None] = None
     visible: bool = True
-    connection: Union[List[Connection], None] = None
+    connections: Union[List[Connection], None] = None
     editors: Union[List[str], None] = None
     viewers: Union[List[str], None] = None
 
@@ -33,6 +33,6 @@ class RecordOne(BaseModel):
 class UpdateRecordOne(BaseModel):
     description: Union[str, None] = None
     visible: Union[bool, None] = None
-    connection: Union[List[Connection], None] = None
+    connections: Union[List[Connection], None] = None
     editors: Union[List[str], None] = None
     viewers: Union[List[str], None] = None
