@@ -4,7 +4,8 @@ from typing import List
 from dotenv import dotenv_values
 from ..models.user_model import User
 from ..models.record_one_model import RecordOne, NewRecordOne, UpdateRecordOne
-from ..services import keycloak_services, record_one_services
+from ..services import keycloak_services, record_one_services, \
+    record_two_services
 
 
 router = APIRouter()
@@ -110,6 +111,37 @@ def create_record_one(
                         status_code=404,
                         detail='Viewer not found'
                     )
+        # Check if the connections are valid
+        if "connections" in new_record_one and new_record_one["connections"]:
+            for connection in new_record_one["connections"]:
+                record_type = connection["type"]
+                record_id = connection["id"]
+                if record_type == config['RECORD_TWO_NAME']:
+                    record_two = record_two_services.get_record_two(
+                        record_id, request
+                    )
+                    if not record_two:
+                        raise HTTPException(
+                            status_code=404,
+                            detail=f'{config["RECORD_TWO_NAME"]} not found'
+                        )
+                    # Check if record_two is visible or viewable or editable
+                    # or owned by current user
+                    if record_two['visible'] == False:
+                        if current_user['username'] != record_two['owner']:
+                            if current_user['username'] not in record_two['viewers']:
+                                if current_user['username'] not in record_two['editors']:
+                                    raise HTTPException(
+                                        status_code=404,
+                                        detail=f'{config["RECORD_TWO_NAME"]} not found'
+                                    )
+                else:
+                    raise HTTPException(
+                        status_code=404,
+                        detail='Connection type not found'
+                    )
+
+        # Create the record
         response.status_code = 201
         new_record = record_one_services.create_record_one(
             new_record_one, current_user['username'], request
