@@ -65,6 +65,36 @@ def get_records_one_me(
     )
 
 
+@router.get("/{id}",
+    responses={
+        200: {
+            "model": RecordOne,
+            "description": f"The {config['RECORD_ONE_NAME']}"
+        },
+        404: {
+            "description": f"{config['RECORD_ONE_NAME']} not found"
+        },
+        500: {
+            "description": "There was an error retrieving the " + \
+                f"{config['RECORD_ONE_NAME']}"
+        }
+    },
+    summary=f"Retrieve a {config['RECORD_ONE_NAME']} given its ID."
+)
+def get_record_one(
+    response: Response, request: Request, id: str
+):
+    record = record_one_services.get_record_one(id, request)
+    if record:
+        response.status_code = 200
+        return record
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{config['RECORD_ONE_NAME']} not found"
+        )
+
+
 @router.post("", 
     responses={
         201: {
@@ -117,6 +147,7 @@ def create_record_one(
                 record_type = connection["type"]
                 record_id = connection["id"]
                 if record_type == config['RECORD_TWO_NAME']:
+                    # Check if the record exists
                     record_two = record_two_services.get_record_two(
                         record_id, request
                     )
@@ -125,16 +156,6 @@ def create_record_one(
                             status_code=404,
                             detail=f'{config["RECORD_TWO_NAME"]} not found'
                         )
-                    # Check if record_two is visible or viewable or editable
-                    # or owned by current user
-                    if record_two['visible'] == False:
-                        if current_user['username'] != record_two['owner']:
-                            if current_user['username'] not in record_two['viewers']:
-                                if current_user['username'] not in record_two['editors']:
-                                    raise HTTPException(
-                                        status_code=404,
-                                        detail=f'{config["RECORD_TWO_NAME"]} not found'
-                                    )
                 else:
                     raise HTTPException(
                         status_code=404,
@@ -155,36 +176,6 @@ def create_record_one(
         raise HTTPException(
             status_code=409,
             detail='Title already exists'
-        )
-
-
-@router.get("/{id}",
-    responses={
-        200: {
-            "model": RecordOne,
-            "description": f"The {config['RECORD_ONE_NAME']}"
-        },
-        404: {
-            "description": f"{config['RECORD_ONE_NAME']} not found"
-        },
-        500: {
-            "description": "There was an error retrieving the " + \
-                f"{config['RECORD_ONE_NAME']}"
-        }
-    },
-    summary=f"Retrieve a {config['RECORD_ONE_NAME']} given its ID."
-)
-def get_record_one(
-    response: Response, request: Request, id: str
-):
-    record = record_one_services.get_record_one(id, request)
-    if record:
-        response.status_code = 200
-        return record
-    else:
-        raise HTTPException(
-            status_code=404,
-            detail=f"{config['RECORD_ONE_NAME']} not found"
         )
 
 

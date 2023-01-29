@@ -4,13 +4,14 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from .user_test import _delete_test_users, _create_test_users
-
+from .record_two_test import _delete_test_records, _create_test_records, \
+    _check_no_records_user_one
 
 # Import the dotenv library to load environment variables from .env file
 config = dotenv.dotenv_values(".env")
 
 
-def _delete_test_records(client):
+def _delete_test_records_one(client):
     """
     Deletes all resources from the database
     """
@@ -39,7 +40,7 @@ def _delete_test_records(client):
     return True
 
 
-def _create_test_records(client):
+def _create_test_records_one(client):
     """
     Creates a resource with the token from test_user_1
     """
@@ -65,7 +66,7 @@ def _create_test_records(client):
     return True
 
 
-def _check_no_records_user_one(client):
+def _check_no_records_one_user_one(client):
     """
     Check that test_user_1 has no records
     """
@@ -167,10 +168,31 @@ def _update_test_record(client):
             record_id = resource["id"]
             break
     assert record_id is not None
+    # Retrieve the record_two with the token from test_user_1
+    response = client.get(
+        f"/{config['RECORD_TWO_NAME']}/me",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    resource_list = response.json()
+    # Get the id from the record with title "test_record"
+    record_two_id = None
+    for resource in resource_list:
+        if resource["title"] == "test_record":
+            record_two_id = resource["id"]
+            break
+    assert record_two_id is not None
     # Update the record with the token from test_user_1
     new_record = {
         "title": "test_record_updated",
         "visible": False,
+        "connections": [
+            {
+                "id": record_two_id,
+                "title": "test_record",
+                "type": config["RECORD_TWO_NAME"]
+            }
+        ]
     }
     response = client.put(
         f"/{config['RECORD_ONE_NAME']}/{record_id}",
@@ -218,6 +240,7 @@ def _check_no_records_user_two(client):
     assert response.json() == []
     return True
 
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be
@@ -240,36 +263,45 @@ def test_all_test():
     4. Check that test_user_1 has no records
         Tested endpoints:
         - POST /token
-        - GET /record/me    
-    5. Create a record with the token from test_user_1
+        - GET /record/me
+    5. Delete all test records two
+        Tested endpoints:
+        - POST /token
+        - GET /record_two/me
+        - DELETE /record_two/{record_id}
+    6. Check that test_user_1 has no record_two
+        Tested endpoints:
+        - POST /token
+        - GET /record_two/me    
+    6. Create a record with the token from test_user_1
         Tested endpoints:
         - POST /token
         - POST /record
-    6. Check that test_user_1 has one record
+    7. Check that test_user_1 has one record
         Tested endpoints:
         - POST /token
         - GET /record/me
-    7. Check that the record exists when get the list of records with the token
+    8. Check that the record exists when get the list of records with the token
         from test_user_1
         Tested endpoints:
         - POST /token
         - GET /record
-    8. Check that the record exists when get the list of records without a token
+    9. Check that the record exists when get the list of records without a token
         Tested endpoints:
         - GET /record
-    9. Update the record with the token from test_user_1
+    10. Update the record with the token from test_user_1
         Tested endpoints:
         - POST /token
         - PUT /record/{record_id}
-    10. Check that test_user_1 has one record
+    11. Check that test_user_1 has one record
         Tested endpoints:
         - POST /token
         - GET /record/me
-    11. Check that the record not exists when get the list of records without a
+    12. Check that the record not exists when get the list of records without a
         token
         Tested endpoints:
         - GET /record
-    12. Check that the record does not exists when get the list of records with 
+    13. Check that the record does not exists when get the list of records with 
         the token from test_user_2
         Tested endpoints:
         - POST /token
@@ -282,31 +314,38 @@ def test_all_test():
         _delete_test_users(client)
         # 2. Create a test user
         _create_test_users(client)
-        # 3. Delete all test resources
-        _delete_test_records(client)
+        # 3. Delete all test records
+        _delete_test_records_one(client)
         # 4. Check that test_user_1 has no records
+        _check_no_records_one_user_one(client)
+        # 5. Delete all test record_two
+        _delete_test_records(client)
+        # 6. Check that test_user_1 has no record_two
         _check_no_records_user_one(client)
-        # 5. Create a resource with the token from test_user_1
+        # 7. Create a record_two with the token from test_user_1
         _create_test_records(client)
-        # 6. Check that test_user_1 has one record
+        # 7. Create a record with the token from test_user_1
+        _create_test_records_one(client)
+        # 8. Check that test_user_1 has one record
         _check_one_records_user_one(client)
-        # 7. Check that the record exists when get the list of records with the
+        # 9. Check that the record exists when get the list of records with the
         # token from test_user_1
         _check_records_user_one(client)
-        # 8. Check that the record exists when get the list of records without a
+        # 10. Check that the record exists when get the list of records without a
         # token
         _check_records_no_token(client)
-        # 9. Update the visibility of the record
+        # 11. Update the visibility of the record
         _update_test_record(client)
-        # 10. Check that test_user_1 has one record
+        # 12. Check that test_user_1 has one record
         _check_one_records_user_one(client)
-        # 11. Check that the record not exists when get the list of records
+        # 13. Check that the record not exists when get the list of records
         # without a token
         _check_no_records_no_token(client)
-        # 12. Check that the record does not exists when get the list of records
+        # 14. Check that the record does not exists when get the list of records
         # with the token from test_user_2
         _check_no_records_user_two(client)
         # Pre-last. Delete all test resources (again)
+        _delete_test_records_one(client)
         _delete_test_records(client)
         # Last. Delete all test users (again)
         _delete_test_users(client)
