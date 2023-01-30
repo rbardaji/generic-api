@@ -31,6 +31,9 @@ config = dotenv_values(".env")
 )
 def get_records_one(
     response: Response, request: Request,
+    title: str = Query(
+        None, description="Optional - String to search in the title"
+    ),
     current_user: User = Depends(keycloak_services.optional_get_current_user)
 ):
     response.status_code = 200
@@ -38,7 +41,7 @@ def get_records_one(
         username = current_user['username']
     else:
         username = None
-    return record_one_services.get_records_one(username, request)
+    return record_one_services.get_records_one(username, title, request)
 
 
 @router.get("/me",

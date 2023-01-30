@@ -55,18 +55,72 @@ def create_record_one(record_one: dict, username: str, request) -> dict:
     return new_record
 
 
-def get_records_one(username, request) -> list:
+def get_records_one(username, title, request) -> list:
     """
     Get all the records
+
+    Parameters
+    ----------
+    username: str
+        The username of the owner
+    title: str
+        The title of the record
+    request: Request
+        The request object
 
     Returns
     -------
     list
         The list of records
     """
-    # Get all records from the database with the owner username or visible True
-    records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
-        {"$or": [{"owner": username}, {"visible": True}]}))
+    if username:
+        if title:
+            # Get all records from the database with the owner username or
+            # visible True
+            records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+                {
+                    "$or": [
+                        {"owner": username},
+                        {"editors": username},
+                        {"viewers": username},
+                        {"visible": True}
+                    ],
+                    "title": {
+                        "$regex": title
+                    }
+                }
+            ))
+        else:
+            # Get all records from the database with the owner username or
+            # visible True
+            records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+                {
+                    "$or": [
+                        {"owner": username},
+                        {"editors": username},
+                        {"viewers": username},
+                        {"visible": True}
+                    ]
+                }
+            ))
+    else:
+        if title:
+            # Get all records from the database with visible True
+            records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+                {
+                    "visible": True,
+                    "title": {
+                        "$regex": title
+                    }
+                }
+            ))
+        else:
+            # Get all records from the database with visible True
+            records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+                {
+                    "visible": True
+                }
+            ))
     # Convert the ObjectId to string
     for record in records:
         record["id"] = str(record["_id"])

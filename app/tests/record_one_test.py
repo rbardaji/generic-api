@@ -229,6 +229,7 @@ def _check_no_records_no_token(client):
     )
     assert response.status_code == 200
     record_list = response.json()
+    print(record_list)
     # Check that there is a record with title "test_record"
     for record in record_list:
         if record["title"] == "test_record":
@@ -274,6 +275,30 @@ def _check_record_user_one_filtered_by_title(client):
     assert response.status_code == 200
     assert len(response.json()) == 1
 
+
+def _check_records_user_one_filtered_by_title(client):
+    """
+    Check that test_user_1 has two records filtered by title
+    """
+    # Get token from test_user_1
+    response = client.post(
+        "/token", data={"username": "test_user_1", "password": "test_password"}
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    response = client.get(
+        f"/{config['RECORD_ONE_NAME']}",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    # Get all resources with the token from test_user_1
+    response = client.get(
+        f"/{config['RECORD_ONE_NAME']}?title=2",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be
@@ -305,40 +330,49 @@ def test_all_test():
     6. Check that test_user_1 has no record_two
         Tested endpoints:
         - POST /token
-        - GET /record_two/me    
-    7. Create two records with the token from test_user_1
+        - GET /record_two/me
+    7. Create two records_two with the token from test_user_1
+        Tested endpoints:
+        - POST /token
+        - POST /record_two    
+    8. Create two records with the token from test_user_1
         Tested endpoints:
         - POST /token
         - POST /record
-    8. Check that test_user_1 has one record
+    9. Check that test_user_1 has two records
         Tested endpoints:
         - POST /token
         - GET /record/me
-    9. Check that the record exists when get the list of records with the token
+    10. Check that the record exists when get the list of records with the token
         from test_user_1
         Tested endpoints:
         - POST /token
         - GET /record
-    10. Check that the record exists when get the list of records without a token
+    11. Check that the record exists when get the list of records with the token
+        filtered by title
+        Tested endpoints:
+        - POST /token
+        - GET /record
+    12. Check that the record exists when get the list of records without a token
         Tested endpoints:
         - GET /record
-    11. Update the record with the token from test_user_1
+    13. Update the record with the token from test_user_1
         Tested endpoints:
         - POST /token
         - PUT /record/{record_id}
-    12. Check that test_user_1 has two record
+    14. Check that test_user_1 has two record
         Tested endpoints:
         - POST /token
         - GET /record/me
-    13. Check that test_user_1 has one record if it is filtered by title
+    15. Check that test_user_1 has one record if it is filtered by title
         Tested endpoints:
         - POST /token
         - GET /record/me
-    14. Check that the record not exists when get the list of records without a
+    16. Check that the record not exists when get the list of records without a
         token
         Tested endpoints:
         - GET /record
-    15. Check that the record does not exists when get the list of records with 
+    17. Check that the record does not exists when get the list of records with 
         the token from test_user_2
         Tested endpoints:
         - POST /token
@@ -363,24 +397,27 @@ def test_all_test():
         _create_test_records(client)
         # 8. Create two record with the token from test_user_1
         _create_test_records_one(client)
-        # 9. Check that test_user_1 has one record
+        # 9. Check that test_user_1 has two record
         _check_two_records_user_one(client)
         # 10. Check that the record exists when get the list of records with the
         # token from test_user_1
         _check_records_user_one(client)
-        # 11. Check that the record exists when get the list of records without a
+        # 11. Check that the record exists when get the list of records with the
+        # token filtered by title
+        _check_records_user_one_filtered_by_title(client)
+        # 12. Check that the record exists when get the list of records without a
         # token
         _check_records_no_token(client)
-        # 12. Update the visibility of the record
+        # 13. Update the visibility of the record
         _update_test_record(client)
-        # 13. Check that test_user_1 has two record
+        # 14. Check that test_user_1 has two record
         _check_two_records_user_one(client, check_connection=True)
-        # 13. Check that test_user_1 has one record if it is filtered by title
+        # 15. Check that test_user_1 has one record if it is filtered by title
         _check_record_user_one_filtered_by_title(client)
-        # 14. Check that the record not exists when get the list of records
+        # 16. Check that the record not exists when get the list of records
         # without a token
         _check_no_records_no_token(client)
-        # 15. Check that the record does not exists when get the list of records
+        # 17. Check that the record does not exists when get the list of records
         # with the token from test_user_2
         _check_no_records_user_two(client)
         # Pre-last. Delete all test resources (again)
