@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Body, Response, HTTPException, Request
+from fastapi import APIRouter, Depends, Body, Response, HTTPException, \
+    Request, Query
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from dotenv import dotenv_values
@@ -57,11 +58,14 @@ def get_records_one(
 )
 def get_records_one_me(
     response: Response, request: Request,
+    title: str = Query(
+        None, description="Optional - String to search in the title"
+    ),
     current_user: User = Depends(keycloak_services.get_current_user)
 ):
     response.status_code = 200
     return record_one_services.get_records_one_me(
-        current_user['username'], request
+        current_user['username'], title, request
     )
 
 

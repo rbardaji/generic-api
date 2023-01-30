@@ -136,6 +136,7 @@ def _check_record_user_one_filtered_by_title(client):
     assert response.status_code == 200
     assert len(response.json()) == 1
 
+
 def _check_records_user_one(client):
     """
     Check that test_user_1 has no records

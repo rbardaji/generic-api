@@ -237,7 +237,7 @@ def is_owned(record_id: str, username: str, request) -> bool:
         return False
 
 
-def get_records_one_me(username, request) -> list:
+def get_records_one_me(username, title, request) -> list:
     """
     Get all the records of the user
 
@@ -245,22 +245,41 @@ def get_records_one_me(username, request) -> list:
     ----------
     username: str
         The username of the owner, editor or viewer
+    title: str
+        String to search in the title
 
     Returns
     -------
     list
         The list of records
     """
-    # Get the records of the owner, editor or viewer
-    records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
-        {
-            "$or": [
-                {"owner": username},
-                {"editors": username},
-                {"viewers": username}
-            ]
-        }
-    ))
+    if title:
+        # Get the records of the owner, editor or viewer with the title
+        records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+            {
+                "$and": [
+                    {
+                        "$or": [
+                            {"owner": username},
+                            {"editors": username},
+                            {"viewers": username}
+                        ]
+                    },
+                    {"title": {"$regex": title}}
+                ]
+            }
+        ))
+    else:
+        # Get the records of the owner, editor or viewer
+        records = list(request.app.database[config["RECORD_ONE_NAME"]].find(
+            {
+                "$or": [
+                    {"owner": username},
+                    {"editors": username},
+                    {"viewers": username}
+                ]
+            }
+        ))
     # Convert the ObjectId to string
     for record in records:
         record["id"] = str(record["_id"])
