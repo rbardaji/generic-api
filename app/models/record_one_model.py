@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 from typing import Union
-from typing import List
+from typing import List, Literal
+from dotenv import dotenv_values
+
+
+#dotenv_values reads the values from the .env file and create a dictionary object
+config = dotenv_values(".env")
 
 
 class Connection(BaseModel):
@@ -36,3 +41,9 @@ class UpdateRecordOne(BaseModel):
     connections: Union[List[Connection], None] = None
     editors: Union[List[str], None] = None
     viewers: Union[List[str], None] = None
+
+
+class UpdateRecordOneConnections(BaseModel):
+    type: str  = config['RECORD_TWO_NAME']
+    id: str
+    operation: Literal['add', 'remove']

@@ -299,6 +299,72 @@ def _check_records_user_one_filtered_by_title(client):
     assert len(response.json()) == 1
 
 
+def _add_remove_connection_record(client):
+    """
+    Add a connection to a record and remove it
+    """
+    # Get token from test_user_1
+    response = client.post(
+        "/token", data={"username": "test_user_1", "password": "test_password"}
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    # Get the id from test_record from record_one
+    response = client.get(
+        f"/{config['RECORD_ONE_NAME']}/me",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    resource_list = response.json()
+    # Get the id from the record with title "test_record"
+    record_one_id = None
+    for resource in resource_list:
+        if resource["title"] == "test_record":
+            record_one_id = resource["id"]
+            break
+    assert record_one_id is not None
+    # Get the id from test_record_2 from record_two
+    response = client.get(
+        f"/{config['RECORD_TWO_NAME']}/me",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    resource_list = response.json()
+    # Get the id from the record with title "test_record"
+    record_two_id = None
+    for resource in resource_list:
+        if resource["title"] == "test_record":
+            record_two_id = resource["id"]
+            break
+    assert record_two_id is not None
+    # Add a connection to the record with the token from test_user_1
+    new_connection = {
+        "id": record_two_id,
+        "operation": "add",
+        "type": config['RECORD_TWO_NAME']
+    }
+    response = client.put(
+        f"/{config['RECORD_ONE_NAME']}/{record_one_id}/connections",
+        json=new_connection,
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()["connections"]) == 2
+    # Remove the connection to the record with the token from test_user_1
+    new_connection = {
+        "id": record_two_id,
+        "operation": "remove",
+        "type": config['RECORD_TWO_NAME']
+    }
+    response = client.put(
+        f"/{config['RECORD_ONE_NAME']}/{record_one_id}/connections",
+        json=new_connection,
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()["connections"]) == 1
+    return True
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be
@@ -377,6 +443,10 @@ def test_all_test():
         Tested endpoints:
         - POST /token
         - GET /record/me
+    18. Add a comment to the record with the token from test_user_1
+        Tested endpoints:
+        - POST /token
+        - POST /record/{record_id}/comment
     Pre-last. Delete all test records (again)
     Last. Delete all test users (again)
     """
@@ -420,6 +490,8 @@ def test_all_test():
         # 17. Check that the record does not exists when get the list of records
         # with the token from test_user_2
         _check_no_records_user_two(client)
+        # 18. Add a connection to the record with the token from test_user_1
+        _add_remove_connection_record(client)
         # Pre-last. Delete all test resources (again)
         _delete_test_records_one(client)
         _delete_test_records(client)

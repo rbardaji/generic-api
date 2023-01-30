@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 #dotenv_values reads the values from the .env file and create a dictionary object
 config = dotenv_values(".env")
 
+
 def title_is_unique(title: str, request) -> bool:
     """
     Check on the MongoDB if the title is unique
@@ -145,9 +146,10 @@ def get_record_two(record_id: str, request) -> dict:
     record = request.app.database[config["RECORD_TWO_NAME"]].find_one(
         {"_id": ObjectId(record_id)}
     )
-    # Convert the ObjectId to string
-    record["id"] = str(record["_id"])
-    del record["_id"]
+    if record:
+        # Convert the ObjectId to string
+        record["id"] = str(record["_id"])
+        del record["_id"]
     return record
 
 

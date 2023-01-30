@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 #dotenv_values reads the values from the .env file and create a dictionary object
 config = dotenv_values(".env")
 
+
 def title_is_unique(title: str, request) -> bool:
     """
     Check on the MongoDB if the title is unique
@@ -145,9 +146,10 @@ def get_record_one(record_id: str, request) -> dict:
     record = request.app.database[config["RECORD_ONE_NAME"]].find_one(
         {"_id": ObjectId(record_id)}
     )
-    # Convert the ObjectId to string
-    record["id"] = str(record["_id"])
-    del record["_id"]
+    if record:
+        # Convert the ObjectId to string
+        record["id"] = str(record["_id"])
+        del record["_id"]
     return record
 
 
@@ -175,6 +177,64 @@ def update_record_one(record_id: str, record_one: dict, request) -> dict:
     for key, value in record_one.items():
         if value is not None:
             actual_record[key] = value
+    del actual_record["_id"]
+    # Update the record in the database
+    request.app.database[config["RECORD_ONE_NAME"]].update_one(
+        {"_id": ObjectId(record_id)},
+        {"$set": actual_record}
+    )
+    updated_record = request.app.database[config["RECORD_ONE_NAME"]].find_one(
+        {"_id": ObjectId(record_id)}
+    )
+    # Convert the ObjectId to string
+    updated_record["id"] = str(updated_record["_id"])
+    del updated_record["_id"]
+    return updated_record
+
+
+def update_record_one_connections(
+    record_id: str, connection: dict, request) -> dict:
+    """
+    Update the connections of a record
+
+    Parameters
+    ----------
+    record_id: str
+        The id of the record
+    connection: dict
+        Connection to be update
+    request: Request
+        The request object
+
+    Returns
+    -------
+    updated_record: dict
+        The updated record
+    """
+    # Get the record from the database
+    actual_record = request.app.database[config["RECORD_ONE_NAME"]].find_one(
+        {"_id": ObjectId(record_id)}
+    )
+    # Update the actual record with the new values
+    # Get the record of the connection
+    connection_record = request.app.database[connection["type"]].find_one(
+        {"_id": ObjectId(connection["id"])}
+    )
+    # If connection["operation"] is "add" add the connection to the record
+    if connection["operation"] == "add":
+        actual_record["connections"].append(
+            {
+                "id": connection["id"],
+                "type": connection["type"],
+                "title": connection_record["title"]
+            }
+        )
+    # If connection["operation"] is "remove" remove the connection from the
+    # record
+    elif connection["operation"] == "remove":
+        for record_connection in actual_record["connections"]:
+            if record_connection["id"] == connection["id"]:
+                actual_record["connections"].remove(record_connection)
     del actual_record["_id"]
     # Update the record in the database
     request.app.database[config["RECORD_ONE_NAME"]].update_one(
