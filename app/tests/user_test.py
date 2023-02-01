@@ -1,3 +1,5 @@
+import yaml
+import os
 from fastapi.testclient import TestClient
 
 from ..main import app
@@ -11,7 +13,7 @@ def _delete_test_users(client):
     - POST /token
     - GET /user/me
     """
-    for username in ['test_user_1', 'test_user_2']:
+    for username in ['test_user_1', 'test_user_2', 'test_user_3']:
         for password in ['test_password', 'updated_test_password']:
             # Get token from the username
             response = client.post(
@@ -222,6 +224,34 @@ def _get_all_users(client):
     return True
 
 
+def _create_test_user_3_with_yaml(client):
+    """
+    Create test_user_3 with a YAML file
+    Tested endpoints:
+    - POST /user
+    """
+    # Create a YAML file with the user info
+    with open("test_user_3.yaml", "w") as file:
+        yaml.dump(
+            {
+                "username": "test_user_3",
+                "password": "test_password",
+                "first_name": "Test",
+                "last_name": "User 3",
+                "email": "test3@test.com",
+            },
+            file
+        )
+    # Create test_user_3 with the yaml file
+    response = client.post(
+        "/user/yaml",
+        files={"file": open("test_user_3.yaml", "rb")}
+    )
+    # Delete the YAML file
+    os.remove("test_user_3.yaml")
+    assert response.status_code == 201
+    return True
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be
@@ -251,7 +281,10 @@ def test_all_test():
         Tested endpoints:
         - POST /token
         - DELETE /user/{user_id}
-    6. Get the list from all users with and without a valid token
+    6. Create the test_user_3 using a yaml file
+        Tested endpoints:
+        - POST /user
+    7. Get the list from all users with and without a valid token
     Last. Delete all test users (again)
     """
     with TestClient(app) as client:
@@ -265,7 +298,9 @@ def test_all_test():
         _update_test_user_2_with_test_user_1_token(client)
         # 5. Try to delete the test_user_2 with the token from test_user_1
         _delete_test_user_2_with_test_user_1_token(client)
-        # 6. Get the list from all users with and without a valid token
+        # 6. Create the test_user_3 using a yaml file
+        _create_test_user_3_with_yaml(client)
+        # 7. Get the list from all users with and without a valid token
         _get_all_users(client)
         # Last. Delete all test users (again)
         _delete_test_users(client)

@@ -27,7 +27,7 @@ services:
     container_name: generic-api
     build: .
     working_dir: /code
-    command: uvicorn app.main:app --host 0.0.0.0 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --reload >> uvicorn_log.txt
     environment:
       DEBUG: 1
     volumes:

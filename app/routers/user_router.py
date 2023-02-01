@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Response, HTTPException, status, Depends
+import yaml
+
+from fastapi import APIRouter, Response, HTTPException, status, Depends, \
+    UploadFile
 from fastapi.encoders import jsonable_encoder
 from typing import List
 
@@ -53,6 +56,53 @@ async def create_user(new_user: NewUser, response: Response):
         )
 
 
+# Define a route that creates a new user with a yanl file
+@router.post('/yaml',
+    responses={
+        201: {
+            "model": User,
+            "description": "New user created"
+        },
+        409: {
+                "description": "Username or email already exists",
+        },
+        500: {
+            "description": "There was an error creating the new user"
+        }
+    },
+    summary="Create a new user using a YAML file."
+)
+async def create_user_yaml(response: Response, file: UploadFile,):
+     # Decode the new user data
+    file_content = file.file.read()
+    user = yaml.safe_load(file_content)
+
+    # Create the new user in the keycloak server
+    status_code = keycloak_services.create_user_keycloak(
+        username=user['username'],
+        first_name=user['first_name'],
+        last_name=user['last_name'],
+        email=user['email'],
+        password=user['password']
+    )
+    if status_code == 201:
+        # Get info from user
+        user_info = keycloak_services.get_user_info(user['username'])
+        response.status_code = 201
+        return user_info
+    elif status_code == 409:
+        raise HTTPException(
+            status_code=409,
+            detail='Username or email already exists'
+        )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='There was an error creating the new user'
+        )
+
+
+
 @router.get("/me", responses={
         200: {
             "model": User,
@@ -89,7 +139,7 @@ async def read_users_me(
     },
     summary="Delete a user. NOTE: You only can delete yourself."
 )
-def delete_user(
+async def delete_user(
     response: Response, user_id: str,
     current_user: User = Depends(keycloak_services.get_current_user)
 ):
@@ -130,7 +180,7 @@ def delete_user(
     summary="Update user info. NOTE: The updated info will be shown " + \
         "when you refresh the token"
 )
-def update_user(
+async def update_user(
     user_id: str, update_info: UpdateUser, response: Response,
     current_user: User = Depends(keycloak_services.get_current_user),
 ):

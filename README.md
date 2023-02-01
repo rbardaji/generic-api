@@ -37,3 +37,7 @@ In order to stop the services, `run docker-compose down` command in the root dir
 Please note that the ports and URLs used in the examples above are based on the default settings in the `docker-compose.yml` file and `.env` file. If you have configured different ports or URLs, you will need to use those instead.
 
 To create a development environment and be able to test or modify the code, you must follow the instructions in [Creating a Development Environment](docs/environment-for-development.md). Once the environment is created, you will be able to run the code and make changes as needed. It is important to remember that any changes you make must be properly tested before they are deployed to production.
+
+## Creating New Users and Records
+
+In order to create new users and records with the API, you can use a POST request with a JSON or YAML file. [Here](docs/yaml_file/user_yaml_file.md) is the information on how to create the YAML files to create users.
