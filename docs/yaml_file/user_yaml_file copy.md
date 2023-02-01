@@ -16,6 +16,7 @@ The keys included in the file are:
 
 Example usage:
 
+    username: jdoe
     first_name: John
     last_name: Doe
     email: johndoe@example.com

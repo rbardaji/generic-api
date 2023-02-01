@@ -1,6 +1,8 @@
+import yaml
 from fastapi import APIRouter, Depends, Body, Response, HTTPException, \
-    Request, Query
+    Request, Query, UploadFile
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import FileResponse
 from typing import List
 from dotenv import dotenv_values
 from ..models.user_model import User
@@ -132,6 +134,70 @@ def create_record_two(
         )
 
 
+@router.post('/yaml', 
+    responses={
+        201: {
+            "model": RecordTwo,
+            "description": f"{config['RECORD_TWO_NAME']} successfully created"
+        },
+        400: {
+            "description": "Invalid request body"
+        },
+        404: {
+            "description": "Editor or viewer not found"
+        },
+        409: {
+                "description": "Title already exists",
+        },
+        500: {
+            "description": f"Error creating the {config['RECORD_TWO_NAME']}"
+        }
+    },
+    summary=f"Create a new {config['RECORD_TWO_NAME']} with a YAML file."
+)
+def create_record_two_yaml(
+    response: Response, request: Request, file: UploadFile,
+    current_user: User = Depends(keycloak_services.get_current_user)
+):
+    # Decode the new user data
+    file_content = file.file.read()
+    new_record_two = yaml.safe_load(file_content)
+    # Check if title is unique
+    unique = record_two_services.title_is_unique(
+        new_record_two["title"], request
+    )
+    if unique:
+        # Check if the editors or viewers are valid users
+        if "editors" in new_record_two and new_record_two["editors"]:
+            for editor in new_record_two["editors"]:
+                if not keycloak_services.user_exists(editor):
+                    raise HTTPException(
+                        status_code=404,
+                        detail='Editor not found'
+                    )
+        if "viewers" in new_record_two and new_record_two["viewers"]:
+            for viewer in new_record_two["viewers"]:
+                if not keycloak_services.user_exists(viewer):
+                    raise HTTPException(
+                        status_code=404,
+                        detail='Viewer not found'
+                    )
+        response.status_code = 201
+        new_record = record_two_services.create_record_two(
+            new_record_two, current_user['username'], request
+        )
+        # Convert the _id field to id
+        new_record["id"] = str(new_record["_id"])
+        del new_record["_id"]
+        return new_record
+
+    else:
+        raise HTTPException(
+            status_code=409,
+            detail='Title already exists'
+        )
+
+
 @router.get("/{id}",
     responses={
         200: {
@@ -155,6 +221,39 @@ def get_record_two(
     if record:
         response.status_code = 200
         return record
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{config['RECORD_ONE_NAME']} not found"
+        )
+
+
+@router.get("/yaml/{id}",
+    responses={
+        200: {
+            "model": RecordTwo,
+            "description": f"The {config['RECORD_TWO_NAME']}"
+        },
+        404: {
+            "description": f"{config['RECORD_TWO_NAME']} not found"
+        },
+        500: {
+            "description": "There was an error retrieving the " + \
+                f"{config['RECORD_TWO_NAME']}."
+        }
+    },
+    summary=f"Retrieve a {config['RECORD_TWO_NAME']} given its ID."
+)
+def get_record_two_yaml(
+    response: Response, request: Request, id: str
+):
+    record = record_two_services.get_record_two(id, request)
+    if record:
+        # Make a yaml file from the record and save it to the temp folder
+        with open(f'temp/{id}.yaml', 'w') as yaml_file:
+            yaml.dump(record, yaml_file)
+        response.status_code = 200
+        return FileResponse(f'temp/{id}.yaml')
     else:
         raise HTTPException(
             status_code=404,
