@@ -8,9 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from pymongo import MongoClient
 
-from .routers import user_router, token_router, record_one_router, \
+from .routers import stats_router, user_router, token_router, record_one_router, \
     record_two_router
-from .services import keycloak_services
+from .services import stats_services
 
 # Import the dotenv library to load environment variables from .env file
 config = dotenv.dotenv_values(".env")
@@ -68,14 +68,20 @@ def shutdown_db_client():
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     # Get the number of users
-    users = keycloak_services.get_all_users()
+    stats = stats_services.get_stats(request)
     return templates.TemplateResponse("index.html", {
         "request": request,
         "title": f"{config['TITLE']} v{config['VERSION']} Dashboard",
-        "users": users,
+        "users": stats['users'],
+        "queries": stats['queries'],
+        "record_one_tag": config['RECORD_ONE_TAG'],
+        "record_two_tag": config['RECORD_TWO_TAG'],
+        "record_one": stats[config['RECORD_ONE_NAME']],
+        "record_two": stats[config['RECORD_TWO_NAME']],
     })
 
 
+app.include_router(stats_router.router, tags=["stats"], prefix="/stats")
 app.include_router(user_router.router, tags=["users"], prefix="/user")
 app.include_router(record_one_router.router, tags=[config['RECORD_ONE_TAG']], prefix=f"/{config['RECORD_ONE_NAME']}")
 app.include_router(record_two_router.router, tags=[config['RECORD_TWO_TAG']], prefix=f"/{config['RECORD_TWO_NAME']}")

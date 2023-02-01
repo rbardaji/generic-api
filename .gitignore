@@ -6,3 +6,5 @@ generic-api-env
 
 # Python compiled files
 __pycache__/
+
+uvicorn_log.txt
