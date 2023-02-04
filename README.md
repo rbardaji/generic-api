@@ -40,4 +40,11 @@ To create a development environment and be able to test or modify the code, you 
 
 ## Creating New Users and Records
 
-In order to create new users and records with the API, you can use a POST request with a JSON or YAML file. [Here](docs/yaml_file/user_yaml_file.md) is the information on how to create the YAML files to create users.
+In order to create new users and records with the API, you can use a POST request with a JSON or YAML file.
+
+* [Here](docs/yaml_file/user_yaml_file.md) is the information on how to create YAML files for creating users.
+* [Here](docs/yaml_file/user_yaml_file.md) is the information on how to create YAML files for creating a record_two.
+
+## Building Your Own API from this Repository Code
+
+If you are interested in using the code from this repository to build your own API, you can follow the instructions in the dedicated chapter [Building Your Own API](./docs/building_your_own_api.md). This section will guide you through the process of setting up the code and customizing it to meet your specific needs. With this information, you will be able to create a fully functional API that can serve as the backbone for your next project.

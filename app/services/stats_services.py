@@ -7,10 +7,13 @@ from . import keycloak_services
 config = dotenv_values(".env")
 
 def get_stats(request: Request):
-    # Read uvicorn_log.txt file and count the number of lines
-    with open("uvicorn_log.txt", "r") as f:
-        lines = f.readlines()
-        num_queries = len(lines)
+    try:
+        # Read uvicorn_log.txt file and count the number of lines
+        with open("uvicorn_log.txt", "r") as f:
+            lines = f.readlines()
+            num_queries = len(lines)
+    except FileNotFoundError:
+        num_queries = "Unknown"
     stats = {
         "queries": num_queries,
         "users": len(keycloak_services.get_all_users()),
