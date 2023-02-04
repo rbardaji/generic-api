@@ -83,6 +83,12 @@ Copy code
 
 **Default**: 5.0
 
+### MONGO_HOST
+
+`MONGO_HOST` is the hostname and port of the MongoDB server. It is used to specify where the MongoDB server can be found.
+
+**Default**: localhost
+
 ### MONGO_PORT
 
 `MONGO_PORT` is the port number on which the MongoDB container will be listening. This is used to specify the port that the MongoDB container will be listening on.

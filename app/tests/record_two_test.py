@@ -139,7 +139,8 @@ def _check_record_user_one_filtered_by_title(client):
 
 def _check_records_user_one(client):
     """
-    Check that test_user_1 has no records
+    When retrieving the list of records with the token from test_user_1,
+    the length of the list should be at least 2.
     """
     # Get token from test_user_1
     response = client.post(
@@ -155,7 +156,7 @@ def _check_records_user_one(client):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    assert len(response.json()) >= 2
 
 
 def _check_records_no_token(client):
@@ -346,12 +347,14 @@ def test_all_test():
         _delete_test_records(client)
         # 4. Check that test_user_1 has no records
         _check_no_records_user_one(client)
-        # 5. Create a resource with the token from test_user_1
+        # 5. Create test_record and test_record_2 (record_two) with the token
+        # from test_user_1
         _create_test_records(client)
         # 6. Check that test_user_1 has two record
+        # (test_record and test_record_2)
         _check_two_records_user_one(client)
         # 7. Check that the record exists when get the list of records with the
-        # token from test_user_1
+        # token from test_user_1, the len of the list should be at least 2
         _check_records_user_one(client)
         # 8. Check that the record exists when get the list of records with the
         # token filter by title

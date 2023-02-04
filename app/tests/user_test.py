@@ -252,6 +252,7 @@ def _create_test_user_3_with_yaml(client):
     assert response.status_code == 201
     return True
 
+
 def test_all_test():
     """
     In order to run the tests, connections to KeyCloak and MongoDB need to be

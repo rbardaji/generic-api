@@ -44,8 +44,8 @@ templates = Jinja2Templates(directory="app/templates")
 def startup_db_client():
     # Set the database client and check the connection
     mongo_uri = f'mongodb://{config["MONGO_ADMIN"]}:' + \
-        f'{config["MONGO_ADMIN_PASSWORD"]}@localhost:{config["MONGO_PORT"]}' + \
-            '/?authMechanism=DEFAULT'
+        f'{config["MONGO_ADMIN_PASSWORD"]}@{config["MONGO_HOST"]}:' + \
+        f'{config["MONGO_PORT"]}/?authMechanism=DEFAULT'
     app.mongodb_client = MongoClient(mongo_uri)
     app.database = app.mongodb_client[config["MONGO_DB_NAME"]]
 
