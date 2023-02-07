@@ -434,6 +434,7 @@ def get_all_users():
     if response.status_code == 200:
         # Extract the relevant information from the response
         users = response.json()
+
         return_users = []
         for user in users:
             user_info = {}

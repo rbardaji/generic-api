@@ -14,9 +14,15 @@ def get_stats(request: Request):
             num_queries = len(lines)
     except FileNotFoundError:
         num_queries = "Unknown"
+    num_users = len(keycloak_services.get_all_users())
+    num_users = "Unknown"
+    try:
+        num_users = len(keycloak_services.get_all_users())
+    except Exception:
+        pass
     stats = {
         "queries": num_queries,
-        "users": len(keycloak_services.get_all_users()),
+        "users": num_users,
         config["RECORD_ONE_NAME"]: request.app.database[
             config["RECORD_ONE_NAME"]
         ].count_documents({}),
