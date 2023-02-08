@@ -5,7 +5,7 @@ This GitHub repo contains code for a generic API in Python using the FastAPI fra
 ## Prerequisites
 Before running the code in this repository, you must create a ```.env``` file containing the necessary environment variables to run the framework and place it in the root of the repository, as explained [here](docs/env_file/env-file-description.md).
 
-Additionally, you must have KeyCloak, MongoDB and a FastAPI Workspace installed and configured using Docker Compose.
+Additionally, you must have KeyCloak, Postgres, MongoDB and a FastAPI Workspace installed and configured using Docker Compose.
 
 ### KeyCloak, MongoDB and FastAPI Installation using Docker Compose
 1. Make sure you have Docker and Docker Compose installed on your system. If not, you can download Docker from the official website (https://www.docker.com/get-started) and follow the instructions for your operating system to install it. If you install the Docker Desktop, Docker Compose may be installed automatically. You can also install Docker Compose by following the instructions on this link (https://docs.docker.com/compose/install/)

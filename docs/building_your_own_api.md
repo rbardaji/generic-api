@@ -18,15 +18,20 @@ The repository code is structured in a way that makes it easy to understand and 
     - **templates**: This folder contains the HTML templates used by the API.
     - **tests**: This folder contains the test cases for the API.
 
-2. **docs**: This folder contains the documentation for the API.
+2. **docker**: This folder contains the Dockerfiles of the containers necessary to run the generic API:
+    - **generic-api**: This folder contains the Dockerfile for the generic API and its requirements:
+        - **Dockerfile**
+        - **requirements.txt**: This file lists the dependencies required to run the API.
+    - **keycloak**: This folder contains the Dockerfile for the generic API and its requirements:
+        - **Dockerfile**
 
-3. **Dockerfile**: This file contains the instructions for building a Docker image for the API.
+3. **docs**: This folder contains the documentation for the API.
 
-4. **docker-compose.yaml**: This file is used to configure and run the API using Docker.
+4. **Dockerfile**: This file contains the instructions for building a Docker image for the API.
 
-5. **README.md**: This file contains the documentation for the repository.
+5. **docker-compose.yaml**: This file is used to configure and run the API using Docker.
 
-6. **requirements.txt**: This file lists the dependencies required to run the API.
+6. **README.md**: This file contains the documentation for the repository.
 
 7. **.env**: This file contains the environment variables required to run the API.
 

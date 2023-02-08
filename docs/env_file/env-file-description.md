@@ -76,7 +76,8 @@ The KEYCLOAK_DATA_FOLDER is the directory on your local host where the Keycloak'
 
 **Default**: ./keycloak_data
 
-Copy code
+## MongoDB Docker Image
+
 ### MONGO_VERSION
 
 `MONGO_VERSION` is the version of MongoDB Docker image. It is used to specify the version of MongoDB that will be used for the container.
@@ -113,17 +114,51 @@ The `MONGO_DATA_FOLDER` is the directory on your local host where the MongoDB's 
 
 **Default**: admin
 
-### GENERIC_API_PORT
-
-`GENERIC_API_PORT` is the port number on which the Generic API container will be listening. This is used to specify the port that the Generic API container will be listening on.
-
-**Default**: 8008
-
 ### MONGO_DB_NAME
 
 `MONGO_DB_NAME` is the name of the MongoDB database that will be used by the Generic API. 
 
 **Default**: generic-api
+
+## Postgres Docker Image
+
+### POSTGRES_USER
+
+`POSTGRES_USER` is the username of the user that will be created in the Postgres container. This user is used to access the Postgres database.
+
+**Default**: postgres
+
+### POSTGRES_PASSWORD
+
+`POSTGRES_PASSWORD` is the password of the user that will be created in the Postgres container. This user is used to access the Postgres database.
+
+**Default**: postgres
+
+### POSTGRES_DB
+
+`POSTGRES_DB` is the name of the Postgres database that will be used by the Generic API. 
+
+**Default**: generic-api
+
+### POSTGRES_PORT
+
+`POSTGRES_PORT` is the port number on which the Postgres container will be listening. This is used to specify the port that the Postgres container will be listening on.
+
+**Default**: 5432
+
+### POSTGRES_DATA_FOLDER
+
+`POSTGRES_DATA_FOLDER` is the directory on your local host where the Postgres's data files will be saved.
+
+**Default**: C:\Users\rbard\OneDrive\Documentos\postgres_data
+
+## Generic API Docker Image
+
+### GENERIC_API_PORT
+
+`GENERIC_API_PORT` is the port number on which the Generic API container will be listening. This is used to specify the port that the Generic API container will be listening on.
+
+**Default**: 8008
 
 ## Record configuration
 
