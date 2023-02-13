@@ -34,7 +34,9 @@ def get_admin_header_keycloak():
         'client_secret': config['KEYCLOAK_ADMIN_SECRET']
     }
 
-    url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     '/realms/master/protocol/openid-connect/token'
+    url = f'{config["KEYCLOAK_URL"]}' + \
         '/realms/master/protocol/openid-connect/token'
 
     # tokens variable is used to store the access token
@@ -96,11 +98,10 @@ def create_user_keycloak(username, first_name, last_name, email, password):
         ]
     }
     #url is used to create a new user in the keycloak server
-    url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
-        f'/auth/admin/realms/{config["KEYCLOAK_REALM"]}/users'
-    url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    url = f'{config["KEYCLOAK_URL"]}' + \
         f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
-
     #response variable is used to store the status code of the request
     response = requests.post(url, headers=admin_header, json=user)
 
@@ -137,7 +138,9 @@ def user_token_keycloak(username, password):
     payload['password'] = password
     payload['username'] = username
 
-    url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token'
+    url = f'{config["KEYCLOAK_URL"]}' + \
         f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token'
 
     tokens = json.loads(
@@ -146,6 +149,8 @@ def user_token_keycloak(username, password):
             data=payload, headers=headers, verify=False
         ).content
     )
+    print("TOKENS")
+    print(tokens)
     try:
         keycloak_token = tokens['access_token']
         return keycloak_token
@@ -168,8 +173,10 @@ def get_attribute_keycloak(username):
         attributes of the user
     """
     #url variable is used to get the attributes of a user in the keycloak server
-    url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
-        f'/auth/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    # url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/auth/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    url = f'{config["KEYCLOAK_URL"]}' + \
+        f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
     #user_info variable is used to store the details of the user
     user_info = requests.get(
         f'{url}?username={username}', headers=get_admin_header_keycloak()
@@ -201,7 +208,9 @@ def get_user_info(username):
         details of the user
     """
     #url variable is used to get the details of a user in the keycloak server
-    url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # url = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    url = f'{config["KEYCLOAK_URL"]}' + \
         f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
     #user variable is used to store the details of the user
     user = requests.get(
@@ -248,7 +257,10 @@ def get_user_info_from_token(token):
         'token': token}
     
     # Define the keycloak endpoint url
-    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token/introspect'
+    
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}' + \
         f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token/introspect'
 
     try:
@@ -319,6 +331,7 @@ def optional_get_current_user(token: str = Depends(optional_oauth2_scheme)):
         user = {}
     return user
 
+
 def delete_user_keycloak(user_id):
     """
     This function is used to delete a user from Keycloak
@@ -337,7 +350,9 @@ def delete_user_keycloak(user_id):
     admin_header = get_admin_header_keycloak()
     
     # Define the Keycloak endpoint url
-    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}' + \
         f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
     # Send a DELETE request to the Keycloak endpoint to delete the user
     response = requests.delete(
@@ -367,7 +382,9 @@ def update_user(user_id, new_user_information: dict):
     admin_header = get_admin_header_keycloak()
 
     # Define the Keycloak endpoint url
-    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}' + \
         f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
 
     # Delete all None values from the new user information
@@ -424,7 +441,9 @@ def get_all_users():
     admin_header = get_admin_header_keycloak()
 
     # Define the Keycloak endpoint url
-    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    # keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
+    #     f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
+    keycloak_endpoint = f'{config["KEYCLOAK_URL"]}' + \
         f'/admin/realms/{config["KEYCLOAK_REALM"]}/users'
 
     # Send a GET request to the Keycloak endpoint to get all users

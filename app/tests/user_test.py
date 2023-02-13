@@ -15,11 +15,13 @@ def _delete_test_users(client):
     """
     for username in ['test_user_1', 'test_user_2', 'test_user_3']:
         for password in ['test_password', 'updated_test_password']:
+            print(f'Deleting {username} with password {password}')
             # Get token from the username
             response = client.post(
                 "/token", data={"username": username, "password": password}
             )
             if response.status_code == 200:
+                print(f'Token obtained for {username}')
                 token = response.json()["access_token"]
                 # Get user_id from the username
                 response = client.get(
