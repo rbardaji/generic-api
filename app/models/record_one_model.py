@@ -17,6 +17,7 @@ class Connection(BaseModel):
 class NewRecordOne(BaseModel):
     title: str
     description: Union[str, None] = None
+    content: Union[List[dict], None] = None
     visible: bool = True
     connections: Union[List[Connection], None] = None
     editors: Union[List[str], None] = None
@@ -27,6 +28,7 @@ class RecordOne(BaseModel):
     id: str
     title: str
     description: str
+    content: Union[List[dict], None] = None
     visible: bool
     owner: str
     connections: Union[List[Connection], None]
@@ -37,6 +39,7 @@ class RecordOne(BaseModel):
 # Record to be updated
 class UpdateRecordOne(BaseModel):
     description: Union[str, None] = None
+    content: Union[List[dict], None] = None
     visible: Union[bool, None] = None
     connections: Union[List[Connection], None] = None
     editors: Union[List[str], None] = None

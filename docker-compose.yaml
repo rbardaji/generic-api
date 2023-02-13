@@ -20,16 +20,20 @@ services:
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - PROXY_ADDRESS_FORWARDING=true
+      # - KEYCLOAK_IMPORT=/tmp/import-realm.json
     ports:
       # - "${KEYCLOAK_PORT}:8443"
       - "${KEYCLOAK_PORT}:8080"
     volumes:
       - ${KEYCLOAK_DATA_FOLDER}:/opt/keycloak/data/
+      # - ./docker/keycloak/realm-export.json:/tmp/import-realm.json  
     depends_on:
       - postgres
     restart: always
     # command: start --optimized --hostname-port=${KEYCLOAK_PORT}
     command: start-dev
+    # command: start --proxy=edge --hostname-strict-https=false
 
   # keycloak:
   #   container_name: keycloak
@@ -37,12 +41,14 @@ services:
   #   environment:
   #     - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
   #     - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+  #     - PROXY_ADDRESS_FORWARDING=true
   #   ports:
   #     - "${KEYCLOAK_PORT}:8080"
   #   volumes:
   #     - ${KEYCLOAK_DATA_FOLDER}:/opt/keycloak/data/
   #   restart: always
-  #   command: start-dev
+  #   # command: start-dev
+  #   # entrypoint: /opt/keycloak/bin/kc.sh start --proxy edge --hostname-strict-https=false
 
   mongodb:
     container_name: mongodb
@@ -68,3 +74,13 @@ services:
     ports:
       - "${GENERIC_API_PORT}:8000"
     restart: always
+
+  rproxy: 
+    image: nginx:latest
+    container_name: nginx_rproxy
+    restart: unless-stopped
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./www:/data/www   
+    ports:
+      - 80:80
