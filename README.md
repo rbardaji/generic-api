@@ -48,3 +48,6 @@ In order to create new users and records with the API, you can use a POST reques
 ## Building Your Own API from this Repository Code
 
 If you are interested in using the code from this repository to build your own API, you can follow the instructions in the dedicated chapter [Building Your Own API](./docs/building_your_own_api.md). This section will guide you through the process of setting up the code and customizing it to meet your specific needs. With this information, you will be able to create a fully functional API that can serve as the backbone for your next project.
+
+## License
+This project is licensed under the Creative Commons Attribution License (CC BY) - see the [LICENSE.md](LICENSE.md) file for details.
