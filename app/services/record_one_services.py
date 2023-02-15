@@ -276,7 +276,13 @@ def update_record_one_content(
     # Update the actual record with the new values
     # If content["operation"] is "add" add the connection to the record
     if content["operation"] == "add":
-        actual_record["content"].append(content['content'])
+        # If actual_record["content"] is [{}], remove it.
+        if actual_record["content"] == [{}]:
+            actual_record["content"].remove({})
+        # content["content"] is a list of dictionaries, so we need to add the
+        # dictionaries, not the list
+        for one_content in content["content"]:
+            actual_record["content"].append(one_content)
     # If content["operation"] is "remove" remove the connection from the
     # record
     elif content["operation"] == "remove":

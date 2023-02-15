@@ -1,6 +1,7 @@
 import csv
 from fastapi import APIRouter, Depends, Body, Response, HTTPException, \
     Request, Query, UploadFile
+from fastapi.responses import HTMLResponse
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from dotenv import dotenv_values
@@ -8,7 +9,7 @@ from ..models.user_model import User
 from ..models.record_one_model import RecordOne, NewRecordOne, \
     UpdateRecordOne, UpdateRecordOneConnections, UpdateRecordOneContent
 from ..services import keycloak_services, record_one_services, \
-    record_two_services
+    record_two_services, plot_services
 
 
 router = APIRouter()
@@ -97,6 +98,38 @@ def get_record_one(
     if record:
         response.status_code = 200
         return record
+    else:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{config['RECORD_ONE_NAME']} not found"
+        )
+
+
+# Make a route that given the id of the record and the x and y axis, it returns a plot of the content
+@router.get("/{id}/plot/{x}/{y}",
+    responses={
+        200: {
+            "description": f"The plot of the {config['RECORD_ONE_NAME']}"
+        },
+        404: {
+            "description": f"{config['RECORD_ONE_NAME']} not found"
+        },
+        500: {
+            "description": "There was an error retrieving the " + \
+                f"{config['RECORD_ONE_NAME']}"
+        }
+    },
+    summary=f"Retrieve a plot of a {config['RECORD_ONE_NAME']} given its ID."
+)
+def get_record_one_plot(
+    request: Request, id: str, x: str, y: str
+):
+    record = record_one_services.get_record_one(id, request)
+    if record:
+        return HTMLResponse(
+            content=plot_services.plot(record, x, y),
+            status_code=200
+        )
     else:
         raise HTTPException(
             status_code=404,
