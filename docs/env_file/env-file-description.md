@@ -10,147 +10,71 @@ We have created an [.env_template file](./.env_template) for you to use as a tem
 
 `TITLE` is the text that is displayed on the OpenAPI documentation page.
 
-**Default**: Generic API
-
 ### DESCRIPTION
 
 `DESCRIPTION` is the text that describes the purpose of the API. It is displayed on the OpenAPI documentation page.
-
-**Default**: Generic API
 
 ### VERSION
 
 `VERSION` of the API.
 
-**Default**: 1.0.0
+## Route configuration
 
-## Keycloak Docker Image
+### RECORD_ONE_NAME
 
-### KEYCLOAK_VERSION
+`RECORD_ONE_NAME` is the name of the first record. This variable is used to specify the name of the first record that will be created in the API.
 
-`KEYCLOAK_VERSION` is the version of Keycloak Docker image. It is used to specify the version of Keycloak that will be used for the container.
+### RECORD_ONE_TAG
 
-**Default**: 20.0.3
+`RECORD_ONE_TAG` is the tag associated with the first record. This variable is used to specify the tag that will be associated with the first record in the API.
 
-### KEYCLOAK_ADMIN
-
-`KEYCLOAK_ADMIN` is the username of the admin user that will be created in the KeyCloak container. This user is used to access the Keycloak admin console.
-
-**Default**: admin
-
-### KEYCLOAK_ADMIN_PASSWORD
-
-`KEYCLOAK_ADMIN_PASSWORD` is the password of the admin user that will be created in the KeyCloak container. This user is used to access the KeyCloak admin console.
-
-**Default**: admin
-
-### KEYCLOAK_PORT
-
-`KEYCLOAK_PORT` is the port number on which the KeyCloak container will be listening. This is used to specify the port that the KeyCloak container will be listening on.
-
-**Default**: 8080
+## Connection to KeyCloak
 
 ### KEYCLOAK_URL
 
 `KEYCLOAK_URL` is the URL of the Keycloak server that the Generic API will use for authentication.
 
-**Default**: http://localhost
+### KEYCLOAK_REALM
+
+`KEYCLOAK_REALM` is the name of the realm that will be used by the Generic API for authentication. This variable specifies the realm within the Keycloak server that the Generic API will use to authenticate and authorize users. The default value is "myrealm", but it can be [set]((../keycloak-configuration.md)) to any realm created on Keycloak server.
 
 ### KEYCLOAK_ADMIN_SECRET
 
 `KEYCLOAK_ADMIN_SECRET` is the secret used to access the Keycloak admin API. This secret is used to configure the Generic API to communicate with the Keycloak server. It is important to note that this variable cannot be completed until Keycloak has been properly configured and the secret has been obtained (more information [here](../keycloak-configuration.md)). Once the secret has been obtained and the variable has been set, it will be necessary to restart the docker-compose ```docker-compose down``` and ```docker-compose up --build --force-recreate --no-deps -d``` in order for the changes to take effect.
 
-### KEYCLOAK_REALM
-
-`KEYCLOAK_REALM` is the name of the realm that will be used by the Generic API for authentication. This variable specifies the realm within the Keycloak server that the Generic API will use to authenticate and authorize users. The default value is "myrealm", but it can be [set]((../keycloak-configuration.md)) to any realm created on Keycloak server.
-
-**Default**: myrealm
-
 ### KEYCLOAK_REALM_SECRET
 
 `KEYCLOAK_REALM_SECRET` is the secret used to access the Keycloak REALM API. This secret is used to configure the Generic API to communicate with the your REALM from the Keycloak server. It is important to note that this variable cannot be completed until Keycloak has been properly configured and the secret has been obtained (more information [here](../keycloak-configuration.md)). Once the secret has been obtained and the variable has been set, it will be necessary to restart the docker-compose ```docker-compose down``` and ```docker-compose up --build --force-recreate --no-deps -d``` in order for the changes to take effect.
 
-### KEYCLOAK_DATA_FOLDER
+### KEYCLOAK_ADMIN
 
-The KEYCLOAK_DATA_FOLDER is the directory on your local host where the Keycloak's configuration files and user databases will be saved.
+`KEYCLOAK_ADMIN` is the username of the admin user that will be created in the KeyCloak container. This user is used to access the Keycloak admin console.
 
-**Default**: ./keycloak_data
+### KEYCLOAK_ADMIN_PASSWORD
 
-## MongoDB Docker Image
+`KEYCLOAK_ADMIN_PASSWORD` is the password of the admin user that will be created in the KeyCloak container. This user is used to access the KeyCloak admin console.
 
-### MONGO_VERSION
-
-`MONGO_VERSION` is the version of MongoDB Docker image. It is used to specify the version of MongoDB that will be used for the container.
-
-**Default**: 5.0
+## Connection to MongoDB
 
 ### MONGO_HOST
 
 `MONGO_HOST` is the hostname and port of the MongoDB server. It is used to specify where the MongoDB server can be found.
 
-**Default**: localhost
-
 ### MONGO_PORT
 
 `MONGO_PORT` is the port number on which the MongoDB container will be listening. This is used to specify the port that the MongoDB container will be listening on.
-
-**Default**: 27017
-
-### MONGO_DATA_FOLDER
-
-The `MONGO_DATA_FOLDER` is the directory on your local host where the MongoDB's data files will be saved.
-
-**Default**: ./mongo_data
 
 ### MONGO_ADMIN
 
 `MONGO_ADMIN` is the username of the admin user that will be created in the MongoDB container. This user is used to access the MongoDB admin console.
 
-**Default**: admin
-
 ### MONGO_ADMIN_PASSWORD
 
 `MONGO_ADMIN_PASSWORD` is the password of the admin user that will be created in the MongoDB container. This user is used to access the MongoDB admin console.
 
-**Default**: admin
-
 ### MONGO_DB_NAME
 
 `MONGO_DB_NAME` is the name of the MongoDB database that will be used by the Generic API. 
-
-**Default**: generic-api
-
-## Postgres Docker Image
-
-### POSTGRES_USER
-
-`POSTGRES_USER` is the username of the user that will be created in the Postgres container. This user is used to access the Postgres database.
-
-**Default**: postgres
-
-### POSTGRES_PASSWORD
-
-`POSTGRES_PASSWORD` is the password of the user that will be created in the Postgres container. This user is used to access the Postgres database.
-
-**Default**: postgres
-
-### POSTGRES_DB
-
-`POSTGRES_DB` is the name of the Postgres database that will be used by the Generic API. 
-
-**Default**: generic-api
-
-### POSTGRES_PORT
-
-`POSTGRES_PORT` is the port number on which the Postgres container will be listening. This is used to specify the port that the Postgres container will be listening on.
-
-**Default**: 5432
-
-### POSTGRES_DATA_FOLDER
-
-`POSTGRES_DATA_FOLDER` is the directory on your local host where the Postgres's data files will be saved.
-
-**Default**: C:\Users\rbard\OneDrive\Documentos\postgres_data
 
 ## Generic API Docker Image
 
@@ -158,18 +82,48 @@ The `MONGO_DATA_FOLDER` is the directory on your local host where the MongoDB's 
 
 `GENERIC_API_PORT` is the port number on which the Generic API container will be listening. This is used to specify the port that the Generic API container will be listening on.
 
-**Default**: 8008
+## MongoDB Docker Image
 
-## Record configuration
+### MONGO_VERSION
 
-### RECORD_ONE_NAME
+`MONGO_VERSION` is the version of MongoDB Docker image. It is used to specify the version of MongoDB that will be used for the container.
 
-`RECORD_ONE_NAME` is the name of the first record. This variable is used to specify the name of the first record that will be created in the API.
+### MONGO_DATA_FOLDER
 
-**Default**: record
+The `MONGO_DATA_FOLDER` is the directory on your local host where the MongoDB's data files will be saved.
 
-### RECORD_ONE_TAG
+## Keycloak Docker Image
 
-`RECORD_ONE_TAG` is the tag associated with the first record. This variable is used to specify the tag that will be associated with the first record in the API.
+### KEYCLOAK_VERSION
 
-**Default**: records
+`KEYCLOAK_VERSION` is the version of Keycloak Docker image. It is used to specify the version of Keycloak that will be used for the container.
+
+### KEYCLOAK_PORT
+
+`KEYCLOAK_PORT` is the port number on which the KeyCloak container will be listening. This is used to specify the port that the KeyCloak container will be listening on.
+
+### KEYCLOAK_DATA_FOLDER
+
+The KEYCLOAK_DATA_FOLDER is the directory on your local host where the Keycloak's configuration files and user databases will be saved.
+
+## Postgres Docker Image
+
+### POSTGRES_USER
+
+`POSTGRES_USER` is the username of the user that will be created in the Postgres container. This user is used to access the Postgres database.
+
+### POSTGRES_PASSWORD
+
+`POSTGRES_PASSWORD` is the password of the user that will be created in the Postgres container. This user is used to access the Postgres database.
+
+### POSTGRES_DB
+
+`POSTGRES_DB` is the name of the Postgres database that will be used by the Generic API. 
+
+### POSTGRES_PORT
+
+`POSTGRES_PORT` is the port number on which the Postgres container will be listening. This is used to specify the port that the Postgres container will be listening on.
+
+### POSTGRES_DATA_FOLDER
+
+`POSTGRES_DATA_FOLDER` is the directory on your local host where the Postgres's data files will be saved.
