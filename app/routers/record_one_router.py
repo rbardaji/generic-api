@@ -1,11 +1,12 @@
+import csv
 from fastapi import APIRouter, Depends, Body, Response, HTTPException, \
-    Request, Query
+    Request, Query, UploadFile
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from dotenv import dotenv_values
 from ..models.user_model import User
 from ..models.record_one_model import RecordOne, NewRecordOne, \
-    UpdateRecordOne, UpdateRecordOneConnections
+    UpdateRecordOne, UpdateRecordOneConnections, UpdateRecordOneContent
 from ..services import keycloak_services, record_one_services, \
     record_two_services
 
@@ -300,6 +301,146 @@ def update_record_one_connections(
         )
     record = record_one_services.update_record_one_connections(
         id, record_one_connections, request
+    )
+    if record:
+        response.status_code = 200
+        return record
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail="There was an error updating the " + \
+                f"{config['RECORD_ONE_NAME']}."
+        )
+
+
+@router.put("/{id}/content",
+    responses={
+        200: {
+            "model": RecordOne,
+            "description": f"The {config['RECORD_ONE_NAME']} has been" + \
+                " updated successfully"
+        },
+        400: {
+            "description": "Invalid request body"
+        },
+        403: {
+            "description": "Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you or you are not an editor"
+        },
+        404: {
+            "description": f"{config['RECORD_ONE_NAME']} not found"
+        },
+        500: {
+            "description": "There was an error updating the " + \
+                f"{config['RECORD_ONE_NAME']}."
+        }
+    },
+    summary=f"Update the content of a {config['RECORD_ONE_NAME']} " + \
+        "given its ID."
+)
+def update_record_one_content(
+    response: Response, request: Request, id: str,
+    record_one_content: UpdateRecordOneContent = Body(),
+    current_user: User = Depends(keycloak_services.get_current_user)
+):
+    record_one_content = jsonable_encoder(record_one_content)
+    # Check if the record exists
+    record = record_one_services.get_record_one(id, request)
+    if not record:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{config['RECORD_ONE_NAME']} not found"
+        )
+    # Check if the record is owned or editable by the current user
+    editable = record_one_services.is_editable(
+        id, current_user['username'], request)
+    if not editable:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you or you are not an editor"
+        )
+    record = record_one_services.update_record_one_content(
+        id, record_one_content, request
+    )
+    if record:
+        response.status_code = 200
+        return record
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail="There was an error updating the " + \
+                f"{config['RECORD_ONE_NAME']}."
+        )
+
+
+@router.put("/{id}/content/csv",
+    responses={
+        200: {
+            "model": RecordOne,
+            "description": f"The {config['RECORD_ONE_NAME']} has been" + \
+                " updated successfully"
+        },
+        400: {
+            "description": "Invalid request body"
+        },
+        403: {
+            "description": "Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you or you are not an editor"
+        },
+        404: {
+            "description": f"{config['RECORD_ONE_NAME']} not found"
+        },
+        500: {
+            "description": "There was an error updating the " + \
+                f"{config['RECORD_ONE_NAME']}."
+        }
+    },
+    summary=f"Update the content of a {config['RECORD_ONE_NAME']} " + \
+        "given its ID."
+)
+def update_record_one_content_csv(
+    response: Response, request: Request, id: str, file: UploadFile,
+    current_user: User = Depends(keycloak_services.get_current_user)
+):
+    def csv_to_dict(file):
+        """Convert a CSV file to a dictionary"""
+        # Read the CSV file
+        csv_file = file.read().decode('utf-8').splitlines()
+        # Create a dictionary from the CSV file
+        csv_dict = csv.DictReader(csv_file)
+        # Convert the CSV file to a dictionary
+        csv_dict = [row for row in csv_dict]
+        return csv_dict
+
+    # Read CSV from file and convert to dict
+    vsc_content = csv_to_dict(file.file)
+    # Check if the record exists
+    record = record_one_services.get_record_one(id, request)
+    if not record:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{config['RECORD_ONE_NAME']} not found"
+        )
+    # Check if the record is owned or editable by the current user
+    editable = record_one_services.is_editable(
+        id, current_user['username'], request)
+    if not editable:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden - You are not authorized to perform " + \
+                f"this operation because the {config['RECORD_ONE_NAME']}" + \
+                " does not belong to you or you are not an editor"
+        )
+    record_one_content = {
+        'content': vsc_content,
+        'operation': 'add'
+    }
+    record = record_one_services.update_record_one_content(
+        id, record_one_content, request
     )
     if record:
         response.status_code = 200

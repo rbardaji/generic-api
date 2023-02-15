@@ -50,3 +50,8 @@ class UpdateRecordOneConnections(BaseModel):
     type: str  = config['RECORD_TWO_NAME']
     id: str
     operation: Literal['add', 'remove']
+
+
+class UpdateRecordOneContent(BaseModel):
+    content: Union[List[dict], None] = None
+    operation: Literal['add', 'remove']

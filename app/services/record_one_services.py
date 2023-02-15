@@ -250,6 +250,52 @@ def update_record_one_connections(
     return updated_record
 
 
+def update_record_one_content(
+    record_id: str, content: dict, request) -> dict:
+    """
+    Update the connections of a record
+
+    Parameters
+    ----------
+    record_id: str
+        The id of the record
+    content: dict
+        Content to be update
+    request: Request
+        The request object
+
+    Returns
+    -------
+    updated_record: dict
+        The updated record
+    """
+    # Get the record from the database
+    actual_record = request.app.database[config["RECORD_ONE_NAME"]].find_one(
+        {"_id": ObjectId(record_id)}
+    )
+    # Update the actual record with the new values
+    # If content["operation"] is "add" add the connection to the record
+    if content["operation"] == "add":
+        actual_record["content"].append(content['content'])
+    # If content["operation"] is "remove" remove the connection from the
+    # record
+    elif content["operation"] == "remove":
+        pass
+    del actual_record["_id"]
+    # Update the record in the database
+    request.app.database[config["RECORD_ONE_NAME"]].update_one(
+        {"_id": ObjectId(record_id)},
+        {"$set": actual_record}
+    )
+    updated_record = request.app.database[config["RECORD_ONE_NAME"]].find_one(
+        {"_id": ObjectId(record_id)}
+    )
+    # Convert the ObjectId to string
+    updated_record["id"] = str(updated_record["_id"])
+    del updated_record["_id"]
+    return updated_record
+
+
 def delete_record_one(record_id: str, request) -> dict:
     """
     Delete a record
