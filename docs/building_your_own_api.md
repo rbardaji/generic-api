@@ -27,15 +27,18 @@ The repository code is structured in a way that makes it easy to understand and 
 
 3. **docs**: This folder contains the documentation for the API.
 
-4. **Dockerfile**: This file contains the instructions for building a Docker image for the API.
+4. **utils**: This folder contains useful Python scripts related to the usage of this API, such as generating random CSV files to test some of the API endpoints.
 
-5. **docker-compose.yaml**: This file is used to configure and run the API using Docker.
+5. **Dockerfile**: This file contains the instructions for building a Docker image for the API.
 
-6. **README.md**: This file contains the documentation for the repository.
+6. **docker-compose.yaml**: This file is used to configure and run the API using Docker.
 
-7. **.env**: This file contains the environment variables required to run the API.
+7. **README.md**: This file contains the documentation for the repository.
 
-By understanding the structure of the repository code, you will be able to navigate and modify the code with ease.
+8. **.env**: This file contains the environment variables required to run the API.
+
+9. **temp**: This folder contains temporary files that are used by the application for specific purposes.
+
 
 ## Modifying the Repository Code
 
