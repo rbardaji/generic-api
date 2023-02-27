@@ -453,15 +453,14 @@ def get_all_users():
     if response.status_code == 200:
         # Extract the relevant information from the response
         users = response.json()
-
         return_users = []
         for user in users:
             user_info = {}
             user_info['id'] = user['id']
             user_info['username'] = user['username']
             user_info['email'] = user.get('email', 'Not provided')
-            user_info['first_name'] = user['firstName']
-            user_info['last_name'] = user['lastName']
+            user_info['first_name'] = user.get('firstName', 'Not provided')
+            user_info['last_name'] = user.get('lastName', 'Not provided')
             return_users.append(user_info)
         return return_users
     else:
