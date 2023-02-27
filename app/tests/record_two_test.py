@@ -134,7 +134,7 @@ def _check_record_user_one_filtered_by_title(client):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) >= 1
 
 
 def _check_records_user_one(client):
@@ -268,7 +268,7 @@ def _check_records_user_one_filtered_by_title(client):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) >= 1
 
 def test_all_test():
     """

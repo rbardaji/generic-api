@@ -433,7 +433,8 @@ def update_record_one_content(
         }
     },
     summary=f"Update the content of a {config['RECORD_ONE_NAME']} " + \
-        "given its ID."
+        "given its ID.",
+    include_in_schema=config['PUT_RECORD_ONE_ID_CONTENT_CSV'].lower() == "true"
 )
 def update_record_one_content_csv(
     response: Response, request: Request, id: str, file: UploadFile,

@@ -28,6 +28,18 @@ We have created an [.env_template file](./.env_template) for you to use as a tem
 
 `RECORD_ONE_TAG` is the tag associated with the first record. This variable is used to specify the tag that will be associated with the first record in the API.
 
+### RECORD_TWO_NAME
+
+`RECORD_TWO_NAME` is the name of the second record. This variable is used to specify the name of the second record that will be created in the API.
+
+### RECORD_TWO_TAG
+
+`RECORD_TWO_TAG` is the tag associated with the second record. This variable is used to specify the tag that will be associated with the second record in the API.
+
+### PUT_RECORD_ONE_ID_CONTENT_CSV
+
+`PUT_RECORD_ONE_ID_CONTENT_CSV` is a boolean variable used to specify whether the content of the first record will be sent in CSV format or not. If its value is True, then the content is expected to be provided in CSV format. If its value is False, then the content will not be provided in CSV format. In case the content is not provided in CSV format, it is expected to be provided in JSON format or another format specified elsewhere in the code.
+
 ## Connection to KeyCloak
 
 ### KEYCLOAK_URL

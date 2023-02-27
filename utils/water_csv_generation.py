@@ -4,7 +4,7 @@ import math
 
 # Set the start and end dates for the time series
 start_date = datetime.datetime(2023, 1, 1, 0, 0, 0)
-end_date = datetime.datetime(2023, 12, 31, 23, 0, 0)
+end_date = datetime.datetime(2023, 1, 15, 23, 0, 0)
 
 # Create CSV file and write data
 with open('water_data.csv', mode='w', newline='') as file:

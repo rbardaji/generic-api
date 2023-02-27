@@ -56,7 +56,7 @@ def create_record_one(record_one: dict, username: str, request) -> dict:
     return new_record
 
 
-def get_records_one(username, title, request) -> list:
+def get_records_one(username, title, request, content_number=3) -> list:
     """
     Get all the records
 
@@ -68,6 +68,8 @@ def get_records_one(username, title, request) -> list:
         The title of the record
     request: Request
         The request object
+    content_number: int
+        The number of contents to return
 
     Returns
     -------
@@ -126,6 +128,19 @@ def get_records_one(username, title, request) -> list:
     for record in records:
         record["id"] = str(record["_id"])
         del record["_id"]
+    # Delmaton the content of the records
+    for record in records:
+        # Check if the record has content
+        if record["content"]:
+            # Get how many contents the record has
+            content_len = len(record["content"])
+            if content_len > content_number:
+                # Get the step to get the contents
+                step = content_len // content_number
+                # Get the contents
+                record["content"] = [
+                    record["content"][i] for i in range(0, content_len, step)
+                ]
     return records
 
 

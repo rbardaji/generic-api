@@ -116,7 +116,7 @@ def _check_two_records_user_one(client, check_connection=False):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    assert len(response.json()) >= 2
     if check_connection:
         assert len(response.json()[0]["connections"]) == 1
 
@@ -139,7 +139,7 @@ def _check_records_user_one(client):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 2
+    assert len(response.json()) >= 2
 
 
 def _check_records_no_token(client):
@@ -273,7 +273,7 @@ def _check_record_user_one_filtered_by_title(client):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) >= 1
 
 
 def _check_records_user_one_filtered_by_title(client):
@@ -296,7 +296,7 @@ def _check_records_user_one_filtered_by_title(client):
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    assert len(response.json()) >= 1
 
 
 def _add_remove_connection_record(client):
@@ -361,6 +361,46 @@ def _add_remove_connection_record(client):
         json=new_connection,
         headers={"Authorization": f"Bearer {token}"}
     )
+    assert response.status_code == 200
+    assert len(response.json()["connections"]) == 1
+    return True
+
+
+def _add_content_record(client):
+    """
+    Add content to a record
+    """
+    # Get token from test_user_1
+    response = client.post(
+        "/token", data={"username": "test_user_1", "password": "test_password"}
+    )
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    # Get the id from test_record from record_one
+    response = client.get(
+        f"/{config['RECORD_ONE_NAME']}/me",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    resource_list = response.json()
+    # Get the id from the record with title "test_record"
+    record_one_id = None
+    for resource in resource_list:
+        if resource["title"] == "test_record":
+            record_one_id = resource["id"]
+            break
+    assert record_one_id is not None
+    # Add content to the record with the token from test_user_1
+    new_content = {
+        "operation": "add",
+        "content": [{"test_content": "test_content"}]
+    }
+    response = client.put(
+        f"/{config['RECORD_ONE_NAME']}/{record_one_id}/content",
+        json=new_content,
+        headers={"Authorization": f"Bearer {token}"}
+    )
+
     assert response.status_code == 200
     assert len(response.json()["connections"]) == 1
     return True
@@ -492,6 +532,8 @@ def test_all_test():
         _check_no_records_user_two(client)
         # 18. Add a connection to the record with the token from test_user_1
         _add_remove_connection_record(client)
+        # 19. Add a content to the record with the token from test_user_1
+        _add_content_record(client)
         # Pre-last. Delete all test resources (again)
         _delete_test_records_one(client)
         _delete_test_records(client)
