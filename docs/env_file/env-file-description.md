@@ -40,6 +40,20 @@ We have created an [.env_template file](./.env_template) for you to use as a tem
 
 `PUT_RECORD_ONE_ID_CONTENT_CSV` is a boolean variable used to specify whether the content of the first record will be sent in CSV format or not. If its value is True, then the content is expected to be provided in CSV format. If its value is False, then the content will not be provided in CSV format. In case the content is not provided in CSV format, it is expected to be provided in JSON format or another format specified elsewhere in the code.
 
+##  Test user
+
+### TEST_USERNAME
+
+`TEST_USERNAME` is the username that can be used by the API when it is unable to connect to `Keycloak`.
+
+### TEST_PASSWORD
+
+`TEST_PASSWORD` is the password that can be used for `TEST_USER` when it is not possible to connect with `Keycloak`.
+
+### TEST_TOKEN
+
+`TEST_TOKEN` is the token returned by the `POST /token` request when using `TEST_USER` and `TEST_PASSWORD` and unable to connect to `Keycloak`. 
+
 ## Connection to KeyCloak
 
 ### KEYCLOAK_URL
