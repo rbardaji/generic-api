@@ -149,8 +149,6 @@ def user_token_keycloak(username, password):
             data=payload, headers=headers, verify=False
         ).content
     )
-    print("TOKENS")
-    print(tokens)
     try:
         keycloak_token = tokens['access_token']
         return keycloak_token
@@ -242,6 +240,18 @@ def get_user_info_from_token(token):
     user_info : dict
         details of the user
     """
+    # First, check if the token is the TEST_TOKEN
+    if token == config['TEST_TOKEN']:
+        # Return a test user
+        user_info = {}
+        user_info['id'] = 'test'
+        user_info['username'] = config['TEST_USERNAME']
+        user_info['email'] = f"{config['TEST_USERNAME']}" + \
+            f"@{config['TEST_USERNAME']}.com"
+        user_info['first_name'] = config['TEST_USERNAME']
+        user_info['last_name'] = config['TEST_USERNAME']
+        return user_info
+
     # Define headers for the request to the keycloak endpoint
     headers = {
         "Connection": "keep-alive",
@@ -257,9 +267,6 @@ def get_user_info_from_token(token):
         'token': token}
     
     # Define the keycloak endpoint url
-    # keycloak_endpoint = f'{config["KEYCLOAK_URL"]}:{config["KEYCLOAK_PORT"]}' + \
-    #     f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token/introspect'
-    
     keycloak_endpoint = f'{config["KEYCLOAK_URL"]}' + \
         f'/realms/{config["KEYCLOAK_REALM"]}/protocol/openid-connect/token/introspect'
 

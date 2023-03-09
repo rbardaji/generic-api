@@ -84,13 +84,19 @@ async def create_user_yaml(response: Response, file: UploadFile,):
     user = yaml.safe_load(file_content)
 
     # Create the new user in the keycloak server
-    status_code = keycloak_services.create_user_keycloak(
-        username=user['username'],
-        first_name=user['first_name'],
-        last_name=user['last_name'],
-        email=user['email'],
-        password=user['password']
-    )
+    try:
+        status_code = keycloak_services.create_user_keycloak(
+            username=user['username'],
+            first_name=user['first_name'],
+            last_name=user['last_name'],
+            email=user['email'],
+            password=user['password']
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Error connectiong with the AAI'
+        )
     if status_code == 201:
         # Get info from user
         user_info = keycloak_services.get_user_info(user['username'])
@@ -149,6 +155,13 @@ async def delete_user(
     response: Response, user_id: str,
     current_user: User = Depends(keycloak_services.get_current_user)
 ):
+    # Check if the current user is the test user
+    if current_user['id'] == 'test':
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Error connectiong with the AAI'
+        )
+
     # Check if the user is trying to delete itself
     if user_id != current_user['id']:
         raise HTTPException(
@@ -190,6 +203,13 @@ async def update_user(
     user_id: str, update_info: UpdateUser, response: Response,
     current_user: User = Depends(keycloak_services.get_current_user),
 ):
+    # Check if the current user is the test user
+    if current_user['id'] == 'test':
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Error connectiong with the AAI'
+        )
+
     # Check if the user is trying to delete itself
     if user_id != current_user['id']:
         raise HTTPException(
@@ -230,10 +250,17 @@ async def update_user(
 async def read_users(
     _: User = Depends(keycloak_services.get_current_user)):
     # Get all users from the keycloak server
-    users = keycloak_services.get_all_users()
-    if 'error' in users:
+    try:
+        users = keycloak_services.get_all_users()
+        if 'error' in users:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='Error getting the users'
+            )
+        return users
+    except Exception:
+        # Check if the current user is the test user
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Error getting the users'
+            detail='Error connectiong with the AAI'
         )
-    return users
