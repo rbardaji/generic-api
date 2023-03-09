@@ -57,7 +57,6 @@ def startup_db_client():
     except Exception as e:
         print(f"ERROR:    Unable to connect to the MongoDB database. {e}")
 
-    print(config['PUT_RECORD_ONE_ID_CONTENT_CSV'], type(config['PUT_RECORD_ONE_ID_CONTENT_CSV']))
 
 # Define a function that runs when the application shuts down
 @app.on_event("shutdown")

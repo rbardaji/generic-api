@@ -1,34 +1,102 @@
+/* CSS for Dashboard */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f2f2f2;
-}
-
-.container {
+  }
+  
+  .container {
+    margin: 0 auto;
     width: 80%;
     margin: 50px auto;
-    text-align: center;
     background-color: white;
     box-shadow: 0 0 10px #ccc;
     padding: 50px;
-}
+  }
 
-h1 {
-    margin: 0 0 50px 0;
-    font-size: 36px;
+  .content {
+    display:flex;
+  }
+  
+  h1 {
+    font-size: 48px;
     font-weight: bold;
-    color: #333;
-    text-shadow: 1px 1px #ccc;
-}
-
-p {
-    font-size: 18px;
-    margin: 20px 0;
-    color: #555;
+    margin: 0 0 40px 0;
+    color: #34495e;
+    text-align: center;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.1);
+  }
+  
+  .status-box {
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    margin-bottom: 40px;
+    padding: 30px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #e5e5e5;
-    box-shadow: 1px 1px #ccc;
-    text-shadow: 1px 1px #fff;
+    margin: 10px;
+  }
+  
+  .status-box h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 0;
+    color: #2c3e50;
+  }
+  
+  .status-box p {
+    font-size: 18px;
+    margin: 0;
+    color: #7f8c8d;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
+  }
+  
+  .status-box span {
+    font-weight: bold;
+  }
+  
+  .status-box span.green {
+    color: #2ecc71;
+  }
+  
+  .status-box span.red {
+    color: #e74c3c;
+  }
+  
+  div p {
+    font-size: 24px;
+    margin: 0;
+    color: #2c3e50;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5);
+  }
+  
+  div p:first-of-type {
+    margin-top: 0;
+  }
+  
+  div p:last-of-type {
+    margin-bottom: 0;
+  }
+  
+  @media only screen and (max-width: 768px) {
+    h1 {
+      font-size: 36px;
     }
+    
+    .status-box {
+      padding: 20px;
+    }
+    
+    .status-box h2 {
+      font-size: 20px;
+    }
+    
+    .status-box p {
+      font-size: 16px;
+    }
+    
+    div p {
+      font-size: 20px;
+    }
+  }
+  

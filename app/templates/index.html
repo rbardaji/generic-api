@@ -10,11 +10,31 @@
 <body>
     <div class="container">
         <h1>{{title}}</h1>
-        <div>
-            <p>Queries: {{queries}}</p>
-            <p>Users: {{users}}</p>
-            <p>{{record_one_tag}}: {{record_one}}</p>
-            <p>{{record_two_tag}}: {{record_two}}</p>
+        <div class="content">
+            <div class="status-box">
+                <h2>System Status:</h2>
+                <p>Log file: 
+                    <span style="color: {% if logs %}green{% else %}red{% endif %};">
+                        {% if logs %}Read{% else %}File not found{% endif %}
+                    </span>
+                </p>
+                <p>Keycloak Connection: 
+                    <span style="color: {% if keycloak %}green{% else %}red{% endif %};">
+                        {% if keycloak %}Connected{% else %}Connection error{% endif %}
+                    </span>
+                </p>
+                <p>MongoDB Connection: 
+                    <span style="color: {% if mongodb %}green{% else %}red{% endif %};">
+                        {% if mongodb %}Connected{% else %}Connection error{% endif %}
+                    </span></p>
+            </div>
+            <div class="status-box">
+                <h2>API Information:</h2>
+                <p>Number of requests executed: {{queries}}</p>
+                <p>Number of users: {{users}}</p>
+                <p>Number of {{record_one_tag}} records: {{record_one}}</p>
+                <p>Number of {{record_two_tag}} records: {{record_two}}</p>
+            </div>
         </div>
     </div>
 </body>
