@@ -32,13 +32,19 @@ async def create_user(new_user: NewUser, response: Response):
     user = jsonable_encoder(new_user)
 
     # Create the new user in the keycloak server
-    status_code = keycloak_services.create_user_keycloak(
-        username=user['username'],
-        first_name=user['first_name'],
-        last_name=user['last_name'],
-        email=user['email'],
-        password=user['password']
-    )
+    try:
+        status_code = keycloak_services.create_user_keycloak(
+            username=user['username'],
+            first_name=user['first_name'],
+            last_name=user['last_name'],
+            email=user['email'],
+            password=user['password']
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Error connectiong with the AAI'
+        )
     if status_code == 201:
         # Get info from user
         user_info = keycloak_services.get_user_info(user['username'])
