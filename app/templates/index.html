@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link href="{{ url_for('static', path='/styles3.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/styles4.css') }}" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -14,19 +14,30 @@
             <div class="status-box">
                 <h2>System Status:</h2>
                 <p>Log file: 
-                    <span style="color: {% if logs %}green{% else %}red{% endif %};">
+                    <span 
+                    style="color: {% if logs %}green{% else %}red{% endif %};">
                         {% if logs %}Read{% else %}File not found{% endif %}
                     </span>
                 </p>
                 <p>Keycloak Connection: 
-                    <span style="color: {% if keycloak %}green{% else %}red{% endif %};">
-                        {% if keycloak %}Connected{% else %}Connection error{% endif %}
+                    <span 
+                    style="color: {% if keycloak %}green{% else %}red{% endif %};">
+                        {% if keycloak %}
+                            Connected
+                        {% else %}
+                            Connection error
+                        {% endif %}
                     </span>
                 </p>
                 <p>MongoDB Connection: 
                     <span style="color: {% if mongodb %}green{% else %}red{% endif %};">
-                        {% if mongodb %}Connected{% else %}Connection error{% endif %}
-                    </span></p>
+                        {% if mongodb %}
+                            Connected
+                        {% else %}
+                            Connection error
+                        {% endif %}
+                    </span>
+                </p>
             </div>
             <div class="status-box">
                 <h2>API Information:</h2>

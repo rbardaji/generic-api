@@ -78,6 +78,9 @@ async def home(request: Request):
         "record_two_tag": config['RECORD_TWO_TAG'],
         "record_one": stats[config['RECORD_ONE_NAME']],
         "record_two": stats[config['RECORD_TWO_NAME']],
+        "logs": stats['logs'],
+        "keycloak": stats['keycloak'],
+        "mongodb": stats['mongoDB'],
     })
 
 
